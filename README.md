@@ -130,15 +130,7 @@ Simply visit: **[https://yourusername.github.io/spanish-quest/](https://youruser
 
 ---
 
-## 📱 Screenshots
 
-| Welcome Screen | World Map | Quiz Mode |
-|:---:|:---:|:---:|
-| ![Welcome](screenshots/welcome.png) | ![Map](screenshots/map.png) | ![Quiz](screenshots/quiz.png) |
-
-| Results | Leaderboard | Achievements |
-|:---:|:---:|:---:|
-| ![Results](screenshots/results.png) | ![Leaderboard](screenshots/leaderboard.png) | ![Achievements](screenshots/achievements.png) |
 
 ---
 
