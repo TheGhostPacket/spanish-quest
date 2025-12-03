@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spanish Quest - Aprende Español Jugando 🌎</title>
-    <meta name="description" content="Juego educativo interactivo para aprender español nivel A1-B1. Explora países hispanohablantes mientras practicas gramática y vocabulario.">
-    <meta name="keywords" content="aprender español, spanish learning game, A1, A2, B1, gramática española, vocabulario español">
+    <meta name="description" content="Juego educativo interactivo para aprender español nivel A1-B1. Modo profesor con sincronización en tiempo real.">
     <meta name="author" content="ShieldStack Technologies">
-    <meta property="og:title" content="Spanish Quest - Aprende Español Jugando">
-    <meta property="og:description" content="Juego educativo interactivo para aprender español. ¡Explora 10 países hispanohablantes!">
-    <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         :root {
             --primary: #FF6B35;
@@ -54,22 +55,15 @@
             border-radius: 50%;
             animation: twinkle 3s infinite;
         }
-        [data-theme="light"] .star { background: var(--secondary); opacity: 0.2; }
         @keyframes twinkle {
             0%, 100% { opacity: 0.2; transform: scale(1); }
             50% { opacity: 0.6; transform: scale(1.3); }
         }
         .confetti-container {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1000;
-            overflow: hidden;
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000; overflow: hidden;
         }
         .confetti {
-            position: absolute;
-            width: 10px; height: 10px;
-            top: -10px;
+            position: absolute; width: 10px; height: 10px; top: -10px;
             animation: confetti-fall 3s ease-out forwards;
         }
         @keyframes confetti-fall {
@@ -77,116 +71,47 @@
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
         header {
-            position: relative;
-            z-index: 10;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(26,26,46,0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 3px solid var(--accent);
-            flex-wrap: wrap;
-            gap: 15px;
+            position: relative; z-index: 10; padding: 15px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(26,26,46,0.95); backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--accent); flex-wrap: wrap; gap: 15px;
         }
-        [data-theme="light"] header { background: rgba(255,255,255,0.95); }
         .logo {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem;
+            font-family: 'Fredoka One', cursive; font-size: 1.8rem;
             background: linear-gradient(135deg, #FF6B35, #F7C948);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            cursor: pointer; display: flex; align-items: center; gap: 10px;
         }
-        .logo:hover { transform: scale(1.05); transition: 0.3s; }
         .header-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .stats-bar { display: flex; gap: 15px; flex-wrap: wrap; }
         .stat {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--light);
-            font-weight: 600;
-            font-size: 0.9rem;
-            background: rgba(255,255,255,0.05);
-            padding: 8px 12px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: 0.3s;
+            display: flex; align-items: center; gap: 6px; color: var(--light);
+            font-weight: 600; font-size: 0.9rem; background: rgba(255,255,255,0.05);
+            padding: 8px 12px; border-radius: 25px; cursor: pointer; transition: 0.3s;
         }
         .stat:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
         .stat-value { color: var(--accent); font-weight: 800; }
-        .streak-fire { animation: fire-pulse 0.5s infinite alternate; }
-        @keyframes fire-pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
         .toggle-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.1); border: none; width: 42px; height: 42px;
+            border-radius: 50%; cursor: pointer; font-size: 1.2rem; transition: 0.3s;
         }
         .toggle-btn:hover { background: rgba(255,255,255,0.2); }
-        .toggle-btn.muted { opacity: 0.5; }
         .mascot {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 50;
-            font-size: 3.5rem;
-            cursor: pointer;
+            position: fixed; bottom: 20px; left: 20px; z-index: 50;
+            font-size: 3.5rem; cursor: pointer; transition: 0.3s;
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
-            transition: 0.3s;
         }
         .mascot:hover { transform: scale(1.1) rotate(-5deg); }
-        .mascot.happy { animation: mascot-happy 0.5s; }
-        .mascot.sad { animation: mascot-sad 0.5s; }
-        @keyframes mascot-happy {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3) rotate(10deg); }
-        }
-        @keyframes mascot-sad {
-            0%, 100% { transform: scale(1) translateY(0); }
-            50% { transform: scale(0.9) translateY(10px); }
-        }
         .mascot-speech {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            color: var(--dark);
-            padding: 10px 15px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            white-space: nowrap;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            opacity: 0;
-            transition: 0.3s;
-            pointer-events: none;
+            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            background: white; color: var(--dark); padding: 10px 15px;
+            border-radius: 15px; font-size: 0.85rem; font-weight: 600;
+            white-space: nowrap; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            opacity: 0; transition: 0.3s; pointer-events: none;
         }
         .mascot-speech.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
-        .mascot-speech::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 10px solid transparent;
-            border-top-color: white;
-        }
         .container {
-            position: relative;
-            z-index: 5;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 25px;
+            position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 25px;
         }
         .screen { display: none; }
         .screen.active { display: block; animation: fadeIn 0.5s; }
@@ -195,13 +120,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .welcome-container {
-            text-align: center;
-            padding: 50px 35px;
+            text-align: center; padding: 50px 35px;
             background: linear-gradient(180deg, rgba(0,78,137,0.2) 0%, rgba(26,26,46,0.8) 100%);
-            border-radius: 25px;
-            border: 3px solid var(--accent);
-            max-width: 850px;
-            margin: 0 auto;
+            border-radius: 25px; border: 3px solid var(--accent); max-width: 850px; margin: 0 auto;
         }
         .welcome-icon { font-size: 4.5rem; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
         @keyframes float {
@@ -209,39 +130,22 @@
             50% { transform: translateY(-15px); }
         }
         .welcome-title {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.8rem;
+            font-family: 'Fredoka One', cursive; font-size: 2.8rem;
             background: linear-gradient(135deg, #FF6B35, #F7C948);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px;
         }
         .welcome-desc {
-            color: rgba(255,255,255,0.85);
-            font-size: 1.1rem;
-            max-width: 550px;
-            margin: 0 auto 25px;
-            line-height: 1.7;
+            color: rgba(255,255,255,0.85); font-size: 1.1rem;
+            max-width: 550px; margin: 0 auto 25px; line-height: 1.7;
         }
-        [data-theme="light"] .welcome-desc { color: rgba(0,0,0,0.7); }
         .player-input-section { margin-bottom: 25px; }
         .player-input-section label {
-            display: block;
-            color: var(--light);
-            margin-bottom: 8px;
-            font-weight: 600;
+            display: block; color: var(--light); margin-bottom: 8px; font-weight: 600;
         }
         .player-input {
-            padding: 14px 25px;
-            font-size: 1rem;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-radius: 50px;
-            background: rgba(255,255,255,0.05);
-            color: var(--light);
-            width: 100%;
-            max-width: 320px;
-            text-align: center;
-            font-family: 'Nunito', sans-serif;
+            padding: 14px 25px; font-size: 1rem; border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 50px; background: rgba(255,255,255,0.05); color: var(--light);
+            width: 100%; max-width: 320px; text-align: center; font-family: 'Nunito', sans-serif;
             transition: 0.3s;
         }
         .player-input:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.1); }
@@ -250,155 +154,85 @@
         .difficulty-section h3 { color: var(--light); margin-bottom: 12px; font-size: 1rem; }
         .difficulty-buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .difficulty-btn {
-            padding: 10px 25px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-radius: 50px;
-            background: rgba(255,255,255,0.05);
-            color: var(--light);
-            font-size: 0.95rem;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
+            padding: 10px 25px; border: 3px solid rgba(255,255,255,0.2); border-radius: 50px;
+            background: rgba(255,255,255,0.05); color: var(--light); font-size: 0.95rem;
+            font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer; transition: 0.3s;
         }
         .difficulty-btn:hover { border-color: var(--accent); transform: translateY(-3px); }
         .difficulty-btn.selected {
-            background: linear-gradient(135deg, #FF6B35, #F7C948);
-            border-color: transparent;
-            color: white;
+            background: linear-gradient(135deg, #FF6B35, #F7C948); border-color: transparent; color: white;
         }
         .difficulty-btn .level-badge { display: block; font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
         .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 25px;
-            text-align: left;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px; margin-bottom: 25px; text-align: left;
         }
         .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
-            padding: 10px 12px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
+            display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.8);
+            font-size: 0.9rem; padding: 10px 12px; background: rgba(255,255,255,0.03); border-radius: 10px;
         }
-        [data-theme="light"] .feature-item { color: rgba(0,0,0,0.7); }
-        .feature-item span:first-child { font-size: 1.2rem; }
         .btn {
-            padding: 14px 35px;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            padding: 14px 35px; border: none; border-radius: 50px; font-family: 'Nunito', sans-serif;
+            font-size: 1rem; font-weight: 800; cursor: pointer; transition: 0.3s;
+            display: inline-flex; align-items: center; gap: 8px;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #FF6B35, #F7C948);
-            color: white;
+            background: linear-gradient(135deg, #FF6B35, #F7C948); color: white;
             box-shadow: 0 5px 25px rgba(255,107,53,0.4);
         }
-        .btn-secondary {
-            background: transparent;
-            border: 3px solid var(--accent);
-            color: var(--accent);
-        }
+        .btn-secondary { background: transparent; border: 3px solid var(--accent); color: var(--accent); }
         .btn-success { background: linear-gradient(135deg, #2ECC71, #27AE60); color: white; }
         .btn-purple { background: linear-gradient(135deg, #9B59B6, #8E44AD); color: white; }
         .btn-teacher { background: linear-gradient(135deg, #E74C3C, #C0392B); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #E74C3C, #C0392B); color: white; }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 35px rgba(0,0,0,0.3); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .btn-small { padding: 10px 22px; font-size: 0.9rem; }
+        /* Map styles */
         .map-container {
             background: linear-gradient(180deg, #0077B6 0%, #004E89 50%, #003566 100%);
-            border-radius: 25px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border-radius: 25px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
         .map-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; flex-wrap: wrap; gap: 15px;
         }
         .map-title { color: white; font-family: 'Fredoka One', cursive; font-size: 1.8rem; }
         .map-subtitle { color: rgba(255,255,255,0.8); font-size: 0.95rem; }
         .category-filter { display: flex; gap: 8px; flex-wrap: wrap; }
         .category-btn {
-            padding: 6px 14px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 20px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 0.8rem;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
+            padding: 6px 14px; border: 2px solid rgba(255,255,255,0.3); border-radius: 20px;
+            background: rgba(255,255,255,0.1); color: white; font-size: 0.8rem;
+            font-family: 'Nunito', sans-serif; font-weight: 600; cursor: pointer; transition: 0.3s;
         }
         .category-btn:hover { background: rgba(255,255,255,0.2); }
         .category-btn.selected { background: var(--accent); border-color: var(--accent); color: var(--dark); }
         .world-map {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            max-width: 1000px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            max-width: 1000px; margin: 0 auto;
         }
         .country-btn {
-            position: relative;
-            aspect-ratio: 1;
-            border: none;
-            border-radius: 18px;
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            font-family: 'Nunito', sans-serif;
+            position: relative; aspect-ratio: 1; border: none; border-radius: 18px;
+            cursor: pointer; transition: 0.3s; overflow: hidden; font-family: 'Nunito', sans-serif;
         }
         .country-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%);
-            z-index: 1;
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%); z-index: 1;
         }
         .country-btn:hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .country-btn.completed::after {
-            content: '✓';
-            position: absolute;
-            top: 8px; right: 8px;
-            width: 26px; height: 26px;
-            background: var(--success);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.85rem;
-            z-index: 5;
+            content: '✓'; position: absolute; top: 8px; right: 8px;
+            width: 26px; height: 26px; background: var(--success); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; font-size: 0.85rem; z-index: 5;
         }
         .country-btn.perfect::after { content: '★'; background: var(--accent); }
         .country-flag { font-size: 2.5rem; display: block; margin-bottom: 4px; }
         .country-name { font-weight: 700; font-size: 0.85rem; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
         .country-stars { margin-top: 4px; font-size: 0.75rem; }
         .country-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            padding: 10px;
+            position: relative; z-index: 2; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; height: 100%; padding: 10px;
         }
         .country-spain { background: linear-gradient(135deg, #C60B1E, #FFC400); }
         .country-mexico { background: linear-gradient(135deg, #006341, #CE1126); }
@@ -410,170 +244,93 @@
         .country-venezuela { background: linear-gradient(135deg, #FFCC00, #00247D); }
         .country-cuba { background: linear-gradient(135deg, #002A8F, #CB1515); }
         .country-costarica { background: linear-gradient(135deg, #002B7F, #CE1126); }
+        /* Modal styles */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 100; align-items: center; justify-content: center;
+            padding: 20px; overflow-y: auto;
         }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
         .quiz-modal {
-            background: var(--dark);
-            border-radius: 22px;
-            padding: 30px;
-            max-width: 700px;
-            width: 100%;
-            position: relative;
-            border: 3px solid var(--accent);
-            box-shadow: 0 0 80px rgba(247,201,72,0.2);
-            max-height: 90vh;
-            overflow-y: auto;
+            background: var(--dark); border-radius: 22px; padding: 30px;
+            max-width: 700px; width: 100%; position: relative;
+            border: 3px solid var(--accent); box-shadow: 0 0 80px rgba(247,201,72,0.2);
+            max-height: 90vh; overflow-y: auto;
         }
         .close-btn {
-            position: absolute;
-            top: 12px; right: 12px;
-            width: 38px; height: 38px;
-            border: none;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            color: var(--light);
-            font-size: 1.4rem;
-            cursor: pointer;
-            transition: 0.3s;
-            z-index: 10;
+            position: absolute; top: 12px; right: 12px; width: 38px; height: 38px;
+            border: none; border-radius: 50%; background: rgba(255,255,255,0.1);
+            color: var(--light); font-size: 1.4rem; cursor: pointer; transition: 0.3s; z-index: 10;
         }
         .close-btn:hover { background: var(--danger); transform: rotate(90deg); }
         .country-info-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 18px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 18px;
+            background: rgba(255,255,255,0.05); border-radius: 15px; padding: 18px;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 18px;
         }
         .country-info-flag { font-size: 3.5rem; }
         .country-info-details h2 {
-            color: var(--light);
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.5rem;
-            margin-bottom: 4px;
+            color: var(--light); font-family: 'Fredoka One', cursive; font-size: 1.5rem; margin-bottom: 4px;
         }
         .country-info-details p { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 2px; }
         .country-fun-fact {
-            background: rgba(247,201,72,0.1);
-            border-left: 4px solid var(--accent);
-            padding: 10px 12px;
-            margin-top: 8px;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.9);
+            background: rgba(247,201,72,0.1); border-left: 4px solid var(--accent);
+            padding: 10px 12px; margin-top: 8px; border-radius: 0 8px 8px 0;
+            font-size: 0.85rem; color: rgba(255,255,255,0.9);
         }
-        .country-fun-fact strong { color: var(--accent); }
         .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-            gap: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
         }
         .quiz-stats { display: flex; gap: 12px; }
         .quiz-stat {
-            text-align: center;
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
+            text-align: center; padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 10px;
         }
         .quiz-stat-value { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--accent); }
         .quiz-stat-value.timer-warning { color: var(--danger); animation: pulse 0.5s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .quiz-stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; }
-        .hints-container { display: flex; align-items: center; gap: 8px; }
+        .quiz-stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.6); text-transform: uppercase; }
         .hint-btn {
-            padding: 8px 16px;
-            border: 2px solid var(--purple);
-            border-radius: 20px;
-            background: rgba(155,89,182,0.1);
-            color: var(--purple);
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
+            padding: 8px 16px; border: 2px solid var(--purple); border-radius: 20px;
+            background: rgba(155,89,182,0.1); color: var(--purple); font-family: 'Nunito', sans-serif;
+            font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.9rem;
         }
         .hint-btn:hover:not(:disabled) { background: var(--purple); color: white; }
         .hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .hints-remaining { color: rgba(255,255,255,0.6); font-size: 0.8rem; }
         .progress-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            margin-bottom: 20px;
-            overflow: hidden;
+            height: 8px; background: rgba(255,255,255,0.1); border-radius: 8px;
+            margin-bottom: 20px; overflow: hidden;
         }
         .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #FF6B35, #F7C948);
-            border-radius: 8px;
-            transition: width 0.4s;
+            height: 100%; background: linear-gradient(135deg, #FF6B35, #F7C948);
+            border-radius: 8px; transition: width 0.4s;
         }
         .question-category {
-            text-align: center;
-            color: var(--accent);
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
+            text-align: center; color: var(--accent); font-size: 0.8rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
         }
         .question-counter { text-align: center; color: rgba(255,255,255,0.5); margin-bottom: 6px; font-size: 0.85rem; }
         .question-text {
-            font-size: 1.3rem;
-            color: var(--light);
-            text-align: center;
-            margin-bottom: 25px;
-            line-height: 1.6;
-            font-weight: 600;
+            font-size: 1.3rem; color: var(--light); text-align: center;
+            margin-bottom: 25px; line-height: 1.6; font-weight: 600;
         }
         .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .answer-btn {
-            padding: 16px 18px;
-            border: 3px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            background: rgba(255,255,255,0.03);
-            color: var(--light);
-            font-size: 1rem;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
+            padding: 16px 18px; border: 3px solid rgba(255,255,255,0.15); border-radius: 12px;
+            background: rgba(255,255,255,0.03); color: var(--light); font-size: 1rem;
+            font-family: 'Nunito', sans-serif; font-weight: 600; cursor: pointer; transition: 0.3s;
         }
-        .answer-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(247,201,72,0.1); transform: translateY(-2px); }
+        .answer-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(247,201,72,0.1); }
         .answer-btn:disabled { cursor: not-allowed; }
-        .answer-btn.correct { border-color: var(--success); background: rgba(46,204,113,0.25); animation: correct-pulse 0.6s; }
+        .answer-btn.correct { border-color: var(--success); background: rgba(46,204,113,0.25); }
         .answer-btn.incorrect { border-color: var(--danger); background: rgba(231,76,60,0.25); animation: shake 0.5s; }
         .answer-btn.eliminated { opacity: 0.3; text-decoration: line-through; pointer-events: none; }
-        @keyframes correct-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
         .explanation-box {
-            margin-top: 20px;
-            padding: 16px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            border-left: 4px solid var(--accent);
-            display: none;
+            margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.05);
+            border-radius: 12px; border-left: 4px solid var(--accent); display: none;
         }
         .explanation-box.show { display: block; animation: fadeIn 0.4s; }
-        .explanation-title { color: var(--accent); font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .explanation-title { color: var(--accent); font-weight: 700; margin-bottom: 6px; }
         .explanation-text { color: rgba(255,255,255,0.9); line-height: 1.6; font-size: 0.9rem; }
         .results-container { text-align: center; padding: 15px; }
         .results-icon { font-size: 4.5rem; margin-bottom: 12px; animation: bounce 1s infinite; }
@@ -582,62 +339,34 @@
         .results-score { font-size: 1.1rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; }
         .results-score span { color: var(--accent); font-weight: 800; }
         .stars-earned { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
-        .star-icon { font-size: 2.2rem; color: rgba(255,255,255,0.2); transition: 0.3s; }
-        .star-icon.earned { color: var(--accent); animation: star-pop 0.5s backwards; filter: drop-shadow(0 0 8px rgba(247,201,72,0.5)); }
+        .star-icon { font-size: 2.2rem; color: rgba(255,255,255,0.2); }
+        .star-icon.earned { color: var(--accent); animation: star-pop 0.5s backwards; }
         @keyframes star-pop { 0% { transform: scale(0) rotate(-180deg); } 100% { transform: scale(1) rotate(0); } }
-        .achievement-unlocked {
-            background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(142,68,173,0.2));
-            border: 2px solid var(--purple);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        .achievement-unlocked.show { display: block; animation: achievement-pop 0.6s; }
-        @keyframes achievement-pop { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
-        .achievement-title { color: var(--purple); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
-        .achievement-name { color: var(--light); font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .review-section { margin-top: 20px; text-align: left; }
-        .review-title { color: var(--light); font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .review-title { color: var(--light); font-weight: 700; margin-bottom: 12px; }
         .review-item {
-            background: rgba(231,76,60,0.1);
-            border: 2px solid rgba(231,76,60,0.3);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
+            background: rgba(231,76,60,0.1); border: 2px solid rgba(231,76,60,0.3);
+            border-radius: 10px; padding: 12px; margin-bottom: 10px;
         }
-        .review-question { color: var(--light); font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
-        .review-answer { font-size: 0.85rem; }
+        .review-question { color: var(--light); font-weight: 600; margin-bottom: 6px; }
         .review-answer .wrong { color: var(--danger); text-decoration: line-through; }
         .review-answer .correct { color: var(--success); font-weight: 700; }
         .review-explanation { margin-top: 6px; font-size: 0.8rem; color: rgba(255,255,255,0.7); font-style: italic; }
         .result-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        /* Leaderboard */
         .leaderboard-modal {
-            background: var(--dark);
-            border-radius: 22px;
-            padding: 30px;
-            max-width: 480px;
-            width: 100%;
-            border: 3px solid var(--accent);
+            background: var(--dark); border-radius: 22px; padding: 30px;
+            max-width: 500px; width: 100%; border: 3px solid var(--accent);
         }
         .leaderboard-title {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem;
-            color: var(--light);
-            text-align: center;
-            margin-bottom: 20px;
+            font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--light);
+            text-align: center; margin-bottom: 20px;
         }
         .leaderboard-list { list-style: none; }
         .leaderboard-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            margin-bottom: 8px;
-            transition: 0.3s;
+            display: flex; align-items: center; padding: 12px;
+            background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 8px;
         }
-        .leaderboard-item:hover { background: rgba(255,255,255,0.08); }
         .leaderboard-item.current-player { border: 2px solid var(--accent); background: rgba(247,201,72,0.1); }
         .leaderboard-rank { font-family: 'Fredoka One', cursive; font-size: 1.3rem; width: 45px; color: var(--accent); }
         .leaderboard-rank.gold { color: #FFD700; }
@@ -647,184 +376,199 @@
         .leaderboard-name { color: var(--light); font-weight: 700; }
         .leaderboard-stats { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
         .leaderboard-score { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--accent); }
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 18px;
+        /* Teacher Mode */
+        .teacher-container {
+            text-align: center; padding: 40px 30px;
+            background: linear-gradient(180deg, rgba(231,76,60,0.1) 0%, rgba(26,26,46,0.9) 100%);
+            border-radius: 25px; border: 3px solid var(--danger); max-width: 900px; margin: 0 auto;
         }
-        .achievement-card {
-            background: rgba(255,255,255,0.03);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            transition: 0.3s;
+        .teacher-title {
+            font-family: 'Fredoka One', cursive; font-size: 2.5rem; color: var(--light); margin-bottom: 10px;
         }
-        .achievement-card.unlocked { border-color: var(--purple); background: rgba(155,89,182,0.1); }
-        .achievement-card.locked { opacity: 0.5; filter: grayscale(1); }
-        .achievement-card-icon { font-size: 2.2rem; margin-bottom: 8px; }
-        .achievement-card-name { color: var(--light); font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; }
-        .achievement-card-desc { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+        .teacher-subtitle { color: rgba(255,255,255,0.7); margin-bottom: 30px; }
+        .pin-qr-container {
+            display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 30px;
+        }
+        .pin-display {
+            background: linear-gradient(135deg, #E74C3C, #C0392B); border-radius: 20px;
+            padding: 25px 40px; text-align: center;
+        }
+        .pin-label { color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
+        .pin-code { font-family: 'Fredoka One', cursive; font-size: 4rem; color: white; letter-spacing: 12px; }
+        .pin-hint { color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 8px; }
+        .qr-display {
+            background: white; border-radius: 20px; padding: 20px; text-align: center;
+        }
+        .qr-display p { color: #333; font-size: 0.85rem; margin-top: 10px; font-weight: 600; }
+        #qrcode { display: inline-block; }
+        .students-section {
+            background: rgba(255,255,255,0.03); border-radius: 15px; padding: 20px; margin-bottom: 25px;
+        }
+        .students-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+        }
+        .students-title { color: var(--light); font-weight: 700; font-size: 1.1rem; }
+        .students-count {
+            background: var(--accent); color: var(--dark); padding: 5px 15px;
+            border-radius: 20px; font-weight: 800;
+        }
+        .students-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;
+        }
+        .student-card {
+            background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .student-name { color: var(--light); font-weight: 600; }
+        .student-score { color: var(--accent); font-family: 'Fredoka One', cursive; }
+        .student-status {
+            padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+        }
+        .student-status.waiting { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+        .student-status.playing { background: rgba(46,204,113,0.2); color: var(--success); }
+        .student-status.finished { background: rgba(247,201,72,0.2); color: var(--accent); }
+        .teacher-controls { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .no-students { color: rgba(255,255,255,0.5); text-align: center; padding: 30px; }
+        /* Student Waiting Room */
+        .waiting-container {
+            text-align: center; padding: 60px 40px;
+            background: linear-gradient(180deg, rgba(155,89,182,0.1) 0%, rgba(26,26,46,0.9) 100%);
+            border-radius: 25px; border: 3px solid var(--purple); max-width: 600px; margin: 0 auto;
+        }
+        .waiting-spinner { font-size: 5rem; animation: spin 2s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .waiting-title { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--light); margin-bottom: 10px; }
+        .waiting-message { color: rgba(255,255,255,0.7); font-size: 1.1rem; margin-bottom: 20px; }
+        .waiting-teacher { color: var(--accent); font-size: 1.2rem; }
+        .waiting-teacher strong { color: var(--light); }
+        /* Live Quiz (Teacher View) */
+        .live-quiz-container {
+            text-align: center; max-width: 1000px; margin: 0 auto;
+        }
+        .live-question-display {
+            background: rgba(255,255,255,0.05); border-radius: 20px; padding: 40px;
+            margin-bottom: 30px; border: 3px solid var(--accent);
+        }
+        .live-question-number {
+            color: var(--accent); font-size: 0.9rem; text-transform: uppercase;
+            letter-spacing: 3px; margin-bottom: 15px;
+        }
+        .live-question-text {
+            font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--light);
+            margin-bottom: 30px; line-height: 1.4;
+        }
+        .live-timer {
+            font-family: 'Fredoka One', cursive; font-size: 5rem; color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .live-timer.warning { color: var(--danger); animation: pulse 0.5s infinite; }
+        .live-answers-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 800px; margin: 0 auto 30px;
+        }
+        .live-answer {
+            padding: 25px; border-radius: 15px; font-size: 1.2rem; font-weight: 700; color: white;
+            display: flex; align-items: center; justify-content: center; min-height: 80px;
+        }
+        .live-answer.a { background: #E74C3C; }
+        .live-answer.b { background: #3498DB; }
+        .live-answer.c { background: #F7C948; }
+        .live-answer.d { background: #2ECC71; }
+        .live-answer.correct { box-shadow: 0 0 0 5px white, 0 0 30px rgba(46,204,113,0.5); }
+        .live-responses {
+            background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px;
+        }
+        .live-responses-title { color: var(--light); margin-bottom: 15px; }
+        .responses-bar {
+            height: 30px; background: rgba(255,255,255,0.1); border-radius: 15px;
+            overflow: hidden; display: flex;
+        }
+        .response-segment { height: 100%; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.85rem; }
+        /* Live Leaderboard */
+        .live-leaderboard {
+            background: rgba(255,255,255,0.05); border-radius: 20px; padding: 30px;
+            max-width: 600px; margin: 0 auto;
+        }
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 20px; margin-bottom: 30px; }
+        .podium-place { text-align: center; }
+        .podium-place.first .podium-block { height: 120px; background: linear-gradient(135deg, #FFD700, #FFA500); }
+        .podium-place.second .podium-block { height: 90px; background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
+        .podium-place.third .podium-block { height: 70px; background: linear-gradient(135deg, #CD7F32, #8B4513); }
+        .podium-block {
+            width: 100px; border-radius: 10px 10px 0 0; display: flex; align-items: center;
+            justify-content: center; font-family: 'Fredoka One', cursive; font-size: 2rem; color: white;
+        }
+        .podium-name { color: var(--light); font-weight: 700; margin-top: 10px; }
+        .podium-score { color: var(--accent); font-family: 'Fredoka One', cursive; }
+        /* Flashcards */
         .flashcard-container { max-width: 550px; margin: 0 auto; }
         .flashcard {
-            background: linear-gradient(135deg, var(--secondary), #0077B6);
-            border-radius: 22px;
-            padding: 50px 35px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            min-height: 260px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            background: linear-gradient(135deg, var(--secondary), #0077B6); border-radius: 22px;
+            padding: 50px 35px; text-align: center; cursor: pointer; transition: transform 0.6s;
+            transform-style: preserve-3d; min-height: 260px; position: relative;
         }
         .flashcard.flipped { transform: rotateY(180deg); }
         .flashcard-front, .flashcard-back { backface-visibility: hidden; }
         .flashcard-back {
-            transform: rotateY(180deg);
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 35px;
+            transform: rotateY(180deg); position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 35px;
         }
         .flashcard-word { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: white; margin-bottom: 12px; }
         .flashcard-hint { color: rgba(255,255,255,0.7); font-size: 0.95rem; }
         .flashcard-nav { display: flex; justify-content: center; gap: 12px; margin-top: 22px; }
-        .challenge-code {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.5rem;
-            color: var(--accent);
-            letter-spacing: 8px;
-            margin: 18px 0;
+        /* Join Class Input */
+        .join-input {
+            font-family: 'Fredoka One', cursive; font-size: 2.5rem; text-align: center;
+            letter-spacing: 10px; padding: 15px 30px; border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 15px; background: rgba(255,255,255,0.05); color: var(--light);
+            width: 200px; text-transform: uppercase;
         }
-        .challenge-code-input {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem;
-            text-align: center;
-            letter-spacing: 6px;
-            padding: 12px 25px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            color: var(--light);
-            width: 220px;
-            text-transform: uppercase;
+        .join-input:focus { outline: none; border-color: var(--accent); }
+        .join-error { color: var(--danger); margin-top: 15px; display: none; }
+        /* Achievements */
+        .achievements-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 18px;
         }
-        .challenge-code-input:focus { outline: none; border-color: var(--accent); }
-        /* Teacher Mode Styles */
-        .teacher-screen {
-            text-align: center;
-            padding: 40px;
+        .achievement-card {
+            background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 16px; text-align: center; transition: 0.3s;
         }
-        .teacher-pin-display {
-            background: linear-gradient(135deg, #E74C3C, #C0392B);
-            border-radius: 20px;
-            padding: 30px 50px;
-            display: inline-block;
-            margin: 20px 0;
+        .achievement-card.unlocked { border-color: var(--purple); background: rgba(155,89,182,0.1); }
+        .achievement-card.locked { opacity: 0.5; filter: grayscale(1); }
+        .achievement-card-icon { font-size: 2rem; margin-bottom: 8px; }
+        .achievement-card-name { color: var(--light); font-weight: 700; font-size: 0.9rem; }
+        .achievement-card-desc { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+        /* Teacher Setup */
+        .teacher-setup {
+            max-width: 500px; margin: 0 auto 30px; background: rgba(255,255,255,0.03);
+            border-radius: 15px; padding: 25px;
         }
-        .teacher-pin-label {
-            color: rgba(255,255,255,0.8);
-            font-size: 1rem;
-            margin-bottom: 10px;
+        .setup-group { margin-bottom: 20px; }
+        .setup-label { color: var(--light); font-weight: 600; margin-bottom: 10px; display: block; }
+        .setup-select {
+            width: 100%; padding: 12px 20px; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px; background: rgba(255,255,255,0.05); color: var(--light);
+            font-family: 'Nunito', sans-serif; font-size: 1rem; cursor: pointer;
         }
-        .teacher-pin {
-            font-family: 'Fredoka One', cursive;
-            font-size: 4rem;
-            color: white;
-            letter-spacing: 15px;
-        }
-        .teacher-url {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-        .teacher-students-list {
-            max-width: 600px;
-            margin: 30px auto;
-            text-align: left;
-        }
-        .teacher-student-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            margin-bottom: 10px;
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .teacher-student-name {
-            color: var(--light);
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-        .teacher-student-score {
-            color: var(--accent);
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.3rem;
-        }
-        .teacher-student-status {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .teacher-student-status.playing { background: rgba(46,204,113,0.2); color: var(--success); }
-        .teacher-student-status.finished { background: rgba(247,201,72,0.2); color: var(--accent); }
-        .teacher-student-status.waiting { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
-        .teacher-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-        .waiting-room {
-            text-align: center;
-            padding: 60px 40px;
-        }
-        .waiting-spinner {
-            font-size: 4rem;
-            animation: spin 2s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .setup-select:focus { outline: none; border-color: var(--accent); }
+        .setup-select option { background: var(--dark); color: var(--light); }
+        /* Responsive */
         @media (max-width: 900px) { .world-map { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
             header { padding: 12px 18px; }
             .logo { font-size: 1.4rem; }
-            .stats-bar { gap: 8px; }
-            .stat { padding: 5px 10px; font-size: 0.8rem; }
             .world-map { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .country-flag { font-size: 2rem; }
             .quiz-modal { padding: 22px 18px; }
             .answers-grid { grid-template-columns: 1fr; }
             .welcome-title { font-size: 2rem; }
             .mascot { font-size: 2.8rem; bottom: 10px; left: 10px; }
-            .feature-grid { grid-template-columns: 1fr; }
-            .teacher-pin { font-size: 3rem; letter-spacing: 10px; }
-        }
-        @media (max-width: 480px) {
-            .quiz-stats { width: 100%; justify-content: space-around; }
-            .hints-container { width: 100%; justify-content: center; margin-top: 8px; }
-            .country-info-card { flex-direction: column; text-align: center; }
-            .result-buttons { flex-direction: column; }
-            .result-buttons .btn { width: 100%; }
+            .pin-qr-container { flex-direction: column; align-items: center; }
+            .pin-code { font-size: 3rem; letter-spacing: 8px; }
+            .live-question-text { font-size: 1.5rem; }
+            .live-timer { font-size: 4rem; }
+            .live-answers-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -832,14 +576,14 @@
     <div class="bg-pattern"></div>
     <div class="stars" id="stars"></div>
     <div class="confetti-container" id="confettiContainer"></div>
-    <div class="mascot" id="mascot" onclick="mascotSpeak()">🦜<div class="mascot-speech" id="mascotSpeech">¡Hola! Soy Paco 🎉</div></div>
+    <div class="mascot" id="mascot" onclick="mascotSpeak()">🦜<div class="mascot-speech" id="mascotSpeech">¡Hola!</div></div>
+    
     <header>
         <div class="logo" onclick="goHome()"><span>🌎</span> Spanish Quest</div>
         <div class="header-controls">
-            <div class="stats-bar">
+            <div class="stats-bar" id="playerStats">
                 <div class="stat"><span>🏆</span><span class="stat-value" id="totalScore">0</span></div>
                 <div class="stat"><span>⭐</span><span class="stat-value" id="totalStars">0</span></div>
-                <div class="stat"><span id="streakIcon">🔥</span><span class="stat-value" id="streakCount">0</span></div>
                 <div class="stat" onclick="showLeaderboard()"><span>📊</span><span>Ranking</span></div>
                 <div class="stat" onclick="showAchievements()"><span>🏅</span><span>Logros</span></div>
             </div>
@@ -847,56 +591,266 @@
             <button class="toggle-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
         </div>
     </header>
+
     <div class="container">
         <!-- Welcome Screen -->
         <div class="screen active" id="welcomeScreen">
             <div class="welcome-container">
                 <div class="welcome-icon">🎮</div>
                 <h1 class="welcome-title">¡Bienvenido a Spanish Quest!</h1>
-                <p class="welcome-desc">Embárcate en una aventura por el mundo hispanohablante. Visita países, responde preguntas y mejora tu español mientras juegas.</p>
+                <p class="welcome-desc">Embárcate en una aventura por el mundo hispanohablante. Visita países, responde preguntas y mejora tu español.</p>
+                
                 <div class="player-input-section">
-                    <label for="playerName">Tu nombre de jugador:</label>
+                    <label for="playerName">Tu nombre:</label>
                     <input type="text" id="playerName" class="player-input" placeholder="Escribe tu nombre..." maxlength="20">
                 </div>
+                
                 <div class="difficulty-section">
                     <h3>Selecciona tu nivel:</h3>
                     <div class="difficulty-buttons">
-                        <button class="difficulty-btn" data-level="A1" onclick="selectDifficulty('A1')">Principiante<span class="level-badge">Nivel A1</span></button>
-                        <button class="difficulty-btn selected" data-level="A2" onclick="selectDifficulty('A2')">Elemental<span class="level-badge">Nivel A2</span></button>
-                        <button class="difficulty-btn" data-level="B1" onclick="selectDifficulty('B1')">Intermedio<span class="level-badge">Nivel B1</span></button>
+                        <button class="difficulty-btn" data-level="A1" onclick="selectDifficulty('A1')">Principiante<span class="level-badge">A1</span></button>
+                        <button class="difficulty-btn selected" data-level="A2" onclick="selectDifficulty('A2')">Elemental<span class="level-badge">A2</span></button>
+                        <button class="difficulty-btn" data-level="B1" onclick="selectDifficulty('B1')">Intermedio<span class="level-badge">B1</span></button>
                     </div>
                 </div>
+                
                 <div class="feature-grid">
-                    <div class="feature-item"><span>🌍</span><span>10 países para explorar</span></div>
+                    <div class="feature-item"><span>🌍</span><span>10 países</span></div>
                     <div class="feature-item"><span>📚</span><span>100+ preguntas</span></div>
                     <div class="feature-item"><span>⏱️</span><span>Desafío con tiempo</span></div>
-                    <div class="feature-item"><span>🏅</span><span>Logros desbloqueables</span></div>
-                    <div class="feature-item"><span>💡</span><span>Explicaciones en español</span></div>
-                    <div class="feature-item"><span>🔥</span><span>Racha diaria</span></div>
+                    <div class="feature-item"><span>🏅</span><span>Logros</span></div>
+                    <div class="feature-item"><span>💡</span><span>Explicaciones</span></div>
+                    <div class="feature-item"><span>👩‍🏫</span><span>Modo clase</span></div>
                 </div>
+                
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">
+                    <button class="btn btn-primary" onclick="startGame()">🚀 ¡Jugar Solo!</button>
+                    <button class="btn btn-secondary" onclick="showFlashcards()">📖 Estudiar</button>
+                </div>
+                
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="startGame()">¡Comenzar Aventura! 🚀</button>
-                    <button class="btn btn-secondary" onclick="showFlashcards()">📖 Estudiar Primero</button>
-                </div>
-                <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                    <button class="btn btn-small btn-purple" onclick="generateChallenge()">🎯 Crear Desafío</button>
-                    <button class="btn btn-small btn-secondary" onclick="joinChallenge()">🤝 Unirse a Desafío</button>
-                </div>
-                <div style="margin-top:15px;">
-                    <button class="btn btn-small btn-teacher" onclick="startTeacherMode()">👩‍🏫 Modo Profesor</button>
-                    <button class="btn btn-small btn-secondary" onclick="joinClassroom()">🎓 Unirse a Clase</button>
+                    <button class="btn btn-small btn-teacher" onclick="showTeacherSetup()">👩‍🏫 Modo Profesor</button>
+                    <button class="btn btn-small btn-purple" onclick="showJoinClass()">🎓 Unirse a Clase</button>
                 </div>
             </div>
         </div>
-        <!-- Map Screen -->
+
+        <!-- Teacher Setup Screen -->
+        <div class="screen" id="teacherSetupScreen">
+            <div class="welcome-container" style="border-color: var(--danger);">
+                <h1 class="welcome-title">👩‍🏫 Configurar Clase</h1>
+                <p class="welcome-desc">Configura tu sesión de clase antes de comenzar.</p>
+                
+                <div class="teacher-setup">
+                    <div class="setup-group">
+                        <label class="setup-label">Tu nombre:</label>
+                        <input type="text" id="teacherName" class="player-input" placeholder="Profesor García" maxlength="20" style="max-width:100%;">
+                    </div>
+                    
+                    <div class="setup-group">
+                        <label class="setup-label">Nivel de dificultad:</label>
+                        <select id="teacherDifficulty" class="setup-select">
+                            <option value="A1">A1 - Principiante</option>
+                            <option value="A2" selected>A2 - Elemental</option>
+                            <option value="B1">B1 - Intermedio</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setup-group">
+                        <label class="setup-label">País para jugar:</label>
+                        <select id="teacherCountry" class="setup-select">
+                            <option value="random">🎲 Aleatorio</option>
+                            <option value="spain">🇪🇸 España</option>
+                            <option value="mexico">🇲🇽 México</option>
+                            <option value="argentina">🇦🇷 Argentina</option>
+                            <option value="colombia">🇨🇴 Colombia</option>
+                            <option value="peru">🇵🇪 Perú</option>
+                            <option value="chile">🇨🇱 Chile</option>
+                            <option value="ecuador">🇪🇨 Ecuador</option>
+                            <option value="venezuela">🇻🇪 Venezuela</option>
+                            <option value="cuba">🇨🇺 Cuba</option>
+                            <option value="costarica">🇨🇷 Costa Rica</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setup-group">
+                        <label class="setup-label">Número de preguntas:</label>
+                        <select id="teacherQuestionCount" class="setup-select">
+                            <option value="5" selected>5 preguntas</option>
+                            <option value="10">10 preguntas</option>
+                            <option value="15">15 preguntas</option>
+                            <option value="20">20 preguntas</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <button class="btn btn-secondary" onclick="goHome()">← Volver</button>
+                    <button class="btn btn-teacher" onclick="createClassroom()">🎯 Crear Clase</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Lobby Screen -->
+        <div class="screen" id="teacherLobbyScreen">
+            <div class="teacher-container">
+                <h1 class="teacher-title">👩‍🏫 Modo Profesor</h1>
+                <p class="teacher-subtitle">Los estudiantes pueden unirse con el PIN o escaneando el código QR</p>
+                
+                <div class="pin-qr-container">
+                    <div class="pin-display">
+                        <div class="pin-label">Código de Clase</div>
+                        <div class="pin-code" id="classPin">----</div>
+                        <div class="pin-hint">Los estudiantes hacen clic en "Unirse a Clase"</div>
+                    </div>
+                    <div class="qr-display">
+                        <div id="qrcode"></div>
+                        <p>Escanear para unirse</p>
+                    </div>
+                </div>
+                
+                <div class="students-section">
+                    <div class="students-header">
+                        <span class="students-title">📋 Estudiantes conectados</span>
+                        <span class="students-count" id="studentCount">0</span>
+                    </div>
+                    <div class="students-grid" id="studentsGrid">
+                        <div class="no-students">Esperando estudiantes...</div>
+                    </div>
+                </div>
+                
+                <div class="teacher-controls">
+                    <button class="btn btn-success" onclick="startClassQuiz()" id="startClassBtn" disabled>
+                        ▶️ Iniciar Juego
+                    </button>
+                    <button class="btn btn-danger" onclick="endClassroom()">❌ Terminar Clase</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Live Quiz Screen -->
+        <div class="screen" id="teacherQuizScreen">
+            <div class="live-quiz-container">
+                <div class="live-question-display">
+                    <div class="live-question-number" id="liveQuestionNumber">Pregunta 1 de 5</div>
+                    <div class="live-question-text" id="liveQuestionText">Cargando pregunta...</div>
+                    <div class="live-timer" id="liveTimer">30</div>
+                </div>
+                
+                <div class="live-answers-grid" id="liveAnswersGrid">
+                    <div class="live-answer a" id="liveAnswerA">A</div>
+                    <div class="live-answer b" id="liveAnswerB">B</div>
+                    <div class="live-answer c" id="liveAnswerC">C</div>
+                    <div class="live-answer d" id="liveAnswerD">D</div>
+                </div>
+                
+                <div class="live-responses">
+                    <div class="live-responses-title">Respuestas: <span id="responseCount">0</span> / <span id="totalStudents">0</span></div>
+                    <div class="responses-bar" id="responsesBar"></div>
+                </div>
+                
+                <div style="margin-top:20px;">
+                    <button class="btn btn-primary" onclick="showQuestionResults()" id="showResultsBtn" style="display:none;">Ver Resultados</button>
+                    <button class="btn btn-primary" onclick="nextLiveQuestion()" id="nextQuestionBtn" style="display:none;">Siguiente Pregunta →</button>
+                    <button class="btn btn-success" onclick="showFinalLeaderboard()" id="showFinalBtn" style="display:none;">🏆 Ver Clasificación Final</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Final Leaderboard -->
+        <div class="screen" id="teacherFinalScreen">
+            <div class="live-quiz-container">
+                <h1 style="font-family:'Fredoka One',cursive;font-size:2.5rem;color:var(--light);margin-bottom:30px;">🏆 Clasificación Final</h1>
+                
+                <div class="podium" id="podium"></div>
+                
+                <div class="live-leaderboard" id="finalLeaderboard"></div>
+                
+                <div style="margin-top:30px;">
+                    <button class="btn btn-secondary" onclick="endClassroom()">Terminar Clase</button>
+                    <button class="btn btn-primary" onclick="restartClass()">🔄 Nueva Partida</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Join Screen -->
+        <div class="screen" id="joinClassScreen">
+            <div class="welcome-container" style="border-color: var(--purple);">
+                <h1 class="welcome-title">🎓 Unirse a una Clase</h1>
+                <p class="welcome-desc">Introduce el PIN que muestra tu profesor.</p>
+                
+                <div class="player-input-section">
+                    <label>Tu nombre:</label>
+                    <input type="text" id="studentName" class="player-input" placeholder="Tu nombre..." maxlength="20">
+                </div>
+                
+                <div class="player-input-section">
+                    <label>PIN de la clase:</label>
+                    <input type="text" id="classCodeInput" class="join-input" maxlength="4" placeholder="----">
+                </div>
+                
+                <p class="join-error" id="joinError">Clase no encontrada. Verifica el PIN.</p>
+                
+                <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;">
+                    <button class="btn btn-secondary" onclick="goHome()">← Volver</button>
+                    <button class="btn btn-purple" onclick="joinClassroom()">Unirse →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Waiting Room -->
+        <div class="screen" id="studentWaitingScreen">
+            <div class="waiting-container">
+                <div class="waiting-spinner">⏳</div>
+                <h1 class="waiting-title">¡Estás conectado!</h1>
+                <p class="waiting-message" id="waitingMessage">Esperando a que el profesor inicie el juego...</p>
+                <p class="waiting-teacher">Clase de: <strong id="teacherNameDisplay">Profesor</strong></p>
+                <p style="color:rgba(255,255,255,0.5);margin-top:20px;font-size:0.9rem;">Nivel: <span id="classLevel">A2</span></p>
+            </div>
+        </div>
+
+        <!-- Student Quiz Screen -->
+        <div class="screen" id="studentQuizScreen">
+            <div class="quiz-modal" style="position:relative;max-width:600px;margin:0 auto;border-color:var(--purple);">
+                <div class="question-counter" id="studentQuestionNumber">Pregunta 1 de 5</div>
+                <div class="live-timer" id="studentTimer" style="font-size:3rem;">30</div>
+                <div class="question-text" id="studentQuestionText">Cargando...</div>
+                
+                <div class="answers-grid" id="studentAnswersGrid"></div>
+                
+                <div id="studentFeedback" style="display:none;text-align:center;margin-top:20px;">
+                    <div id="feedbackIcon" style="font-size:4rem;"></div>
+                    <div id="feedbackText" style="color:var(--light);font-size:1.2rem;margin-top:10px;"></div>
+                    <div id="feedbackExplanation" style="color:rgba(255,255,255,0.7);margin-top:10px;"></div>
+                </div>
+                
+                <div id="waitingNext" style="display:none;text-align:center;margin-top:20px;color:rgba(255,255,255,0.6);">
+                    Esperando siguiente pregunta...
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Final Score -->
+        <div class="screen" id="studentFinalScreen">
+            <div class="waiting-container" style="border-color:var(--accent);">
+                <div style="font-size:5rem;margin-bottom:20px;">🎉</div>
+                <h1 class="waiting-title">¡Juego Terminado!</h1>
+                <p style="color:var(--accent);font-family:'Fredoka One',cursive;font-size:3rem;" id="studentFinalScore">0</p>
+                <p style="color:rgba(255,255,255,0.7);">puntos</p>
+                <p style="color:var(--light);margin-top:20px;font-size:1.2rem;">Correctas: <span id="studentCorrectCount">0</span> / <span id="studentTotalCount">0</span></p>
+                <p style="color:rgba(255,255,255,0.6);margin-top:30px;">Mira la pantalla del profesor para ver la clasificación final.</p>
+            </div>
+        </div>
+
+        <!-- Solo Play Map Screen -->
         <div class="screen" id="mapScreen">
             <div class="map-container">
                 <div class="map-header">
                     <div>
                         <h1 class="map-title">🗺️ Mapa del Mundo Hispano</h1>
-                        <p class="map-subtitle">Haz clic en un país para comenzar su misión</p>
+                        <p class="map-subtitle">Haz clic en un país para comenzar</p>
                     </div>
-                    <div class="category-filter" id="categoryFilter">
+                    <div class="category-filter">
                         <button class="category-btn selected" data-category="all" onclick="filterCategory('all')">Todas</button>
                         <button class="category-btn" data-category="gramatica" onclick="filterCategory('gramatica')">Gramática</button>
                         <button class="category-btn" data-category="vocabulario" onclick="filterCategory('vocabulario')">Vocabulario</button>
@@ -906,11 +860,11 @@
                 <div class="world-map" id="worldMap"></div>
             </div>
         </div>
+
         <!-- Flashcard Screen -->
         <div class="screen" id="flashcardScreen">
             <div class="flashcard-container">
                 <h2 style="color:var(--light);text-align:center;margin-bottom:20px;font-family:'Fredoka One',cursive;">📖 Modo Estudio</h2>
-                <p style="color:rgba(255,255,255,0.7);text-align:center;margin-bottom:20px;">Haz clic en la tarjeta para ver la respuesta</p>
                 <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
                     <div class="flashcard-front">
                         <div class="flashcard-word" id="flashcardFront">Cargando...</div>
@@ -921,44 +875,18 @@
                     </div>
                 </div>
                 <div class="flashcard-nav">
-                    <button class="btn btn-secondary" onclick="prevFlashcard()">⬅️ Anterior</button>
-                    <button class="btn btn-primary" onclick="nextFlashcard()">Siguiente ➡️</button>
+                    <button class="btn btn-secondary" onclick="prevFlashcard()">← Anterior</button>
+                    <button class="btn btn-primary" onclick="nextFlashcard()">Siguiente →</button>
                 </div>
-                <div style="text-align:center;margin-top:15px;"><span style="color:rgba(255,255,255,0.6);" id="flashcardProgress">1 / 10</span></div>
-                <div style="text-align:center;margin-top:20px;"><button class="btn btn-success" onclick="startGame()">¡Listo para Jugar! 🎮</button></div>
-            </div>
-        </div>
-        <!-- Teacher Mode Screen -->
-        <div class="screen" id="teacherScreen">
-            <div class="teacher-screen">
-                <h1 style="color:var(--light);font-family:'Fredoka One',cursive;font-size:2.5rem;margin-bottom:10px;">👩‍🏫 Modo Profesor</h1>
-                <p style="color:rgba(255,255,255,0.7);margin-bottom:20px;">Los estudiantes pueden unirse con este código PIN</p>
-                <div class="teacher-pin-display">
-                    <div class="teacher-pin-label">CÓDIGO DE CLASE</div>
-                    <div class="teacher-pin" id="classroomPin">----</div>
-                    <div class="teacher-url">Los estudiantes hacen clic en "Unirse a Clase"</div>
+                <div style="text-align:center;margin-top:15px;color:rgba(255,255,255,0.6);" id="flashcardProgress">1 / 10</div>
+                <div style="text-align:center;margin-top:20px;">
+                    <button class="btn btn-success" onclick="startGame()">¡Listo para Jugar! 🎮</button>
                 </div>
-                <div class="teacher-students-list" id="teacherStudentsList">
-                    <h3 style="color:var(--light);margin-bottom:15px;">📋 Estudiantes conectados: <span id="studentCount">0</span></h3>
-                    <div id="studentsContainer"></div>
-                </div>
-                <div class="teacher-controls">
-                    <button class="btn btn-success" onclick="startClassGame()" id="startClassBtn" disabled>▶️ Iniciar Juego</button>
-                    <button class="btn btn-secondary" onclick="endTeacherMode()">❌ Terminar Clase</button>
-                </div>
-            </div>
-        </div>
-        <!-- Student Waiting Room -->
-        <div class="screen" id="waitingRoom">
-            <div class="waiting-room">
-                <div class="waiting-spinner">⏳</div>
-                <h2 style="color:var(--light);font-family:'Fredoka One',cursive;font-size:2rem;margin-bottom:10px;">¡Estás conectado!</h2>
-                <p style="color:rgba(255,255,255,0.7);font-size:1.1rem;" id="waitingMessage">Esperando a que el profesor inicie el juego...</p>
-                <p style="color:var(--accent);font-size:1.2rem;margin-top:20px;">Clase de: <strong id="teacherNameDisplay">Profesor</strong></p>
             </div>
         </div>
     </div>
-    <!-- Quiz Modal -->
+
+    <!-- Quiz Modal (Solo Play) -->
     <div class="modal-overlay" id="quizModal">
         <div class="quiz-modal">
             <button class="close-btn" onclick="closeQuiz()">×</button>
@@ -968,8 +896,8 @@
                     <div class="country-info-details">
                         <h2 id="countryName">España</h2>
                         <p id="countryCapital">Capital: Madrid</p>
-                        <p id="countryPopulation">Población: 47 millones</p>
-                        <div class="country-fun-fact" id="countryFunFact"><strong>¿Sabías que...?</strong> España tiene 47 sitios Patrimonio de la Humanidad.</div>
+                        <p id="countryPopulation">Población: 47M</p>
+                        <div class="country-fun-fact" id="countryFunFact"></div>
                     </div>
                 </div>
                 <div class="quiz-header">
@@ -977,15 +905,12 @@
                         <div class="quiz-stat"><div class="quiz-stat-value" id="timerDisplay">30</div><div class="quiz-stat-label">Segundos</div></div>
                         <div class="quiz-stat"><div class="quiz-stat-value" id="scoreDisplay">0</div><div class="quiz-stat-label">Puntos</div></div>
                     </div>
-                    <div class="hints-container">
-                        <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 Pista</button>
-                        <span class="hints-remaining" id="hintsRemaining">2 restantes</span>
-                    </div>
+                    <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 Pista (<span id="hintsRemaining">2</span>)</button>
                 </div>
                 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
                 <div class="question-category" id="questionCategory">Gramática</div>
                 <div class="question-counter" id="questionCounter">Pregunta 1 de 5</div>
-                <div class="question-text" id="questionText">Cargando pregunta...</div>
+                <div class="question-text" id="questionText">Cargando...</div>
                 <div class="answers-grid" id="answersGrid"></div>
                 <div class="explanation-box" id="explanationBox">
                     <div class="explanation-title">💡 Explicación</div>
@@ -996,263 +921,292 @@
                 <div class="results-container">
                     <div class="results-icon" id="resultsIcon">🎉</div>
                     <h2 class="results-title" id="resultsTitle">¡Excelente!</h2>
-                    <p class="results-score" id="resultsScore">Has acertado <span>4</span> de <span>5</span> preguntas</p>
+                    <p class="results-score" id="resultsScore"></p>
                     <div class="stars-earned" id="starsEarned"></div>
-                    <div class="achievement-unlocked" id="achievementUnlocked"><div class="achievement-title">🏅 ¡Logro Desbloqueado!</div><div class="achievement-name" id="achievementName"><span>🎯</span> Primera Misión</div></div>
-                    <div class="review-section" id="reviewSection" style="display:none;"><div class="review-title">📝 Repaso de errores:</div><div id="reviewList"></div></div>
+                    <div class="review-section" id="reviewSection" style="display:none;">
+                        <div class="review-title">📝 Repaso de errores:</div>
+                        <div id="reviewList"></div>
+                    </div>
                     <div class="result-buttons">
-                        <button class="btn btn-secondary" onclick="closeQuiz()">🗺️ Volver al Mapa</button>
-                        <button class="btn btn-primary" onclick="retryQuiz()">🔄 Intentar de Nuevo</button>
+                        <button class="btn btn-secondary" onclick="closeQuiz()">🗺️ Volver</button>
+                        <button class="btn btn-primary" onclick="retryQuiz()">🔄 Reintentar</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Leaderboard Modal -->
     <div class="modal-overlay" id="leaderboardModal">
         <div class="leaderboard-modal">
             <button class="close-btn" onclick="closeLeaderboard()">×</button>
-            <h2 class="leaderboard-title">🏆 Tabla de Clasificación</h2>
+            <h2 class="leaderboard-title">🏆 Clasificación</h2>
             <ul class="leaderboard-list" id="leaderboardList"></ul>
         </div>
     </div>
+
     <!-- Achievements Modal -->
     <div class="modal-overlay" id="achievementsModal">
-        <div class="quiz-modal" style="max-width:650px;">
+        <div class="quiz-modal" style="max-width:600px;">
             <button class="close-btn" onclick="closeAchievements()">×</button>
-            <h2 style="color:var(--light);text-align:center;font-family:'Fredoka One',cursive;margin-bottom:8px;">🏅 Tus Logros</h2>
-            <p style="color:rgba(255,255,255,0.6);text-align:center;margin-bottom:15px;" id="achievementProgress">0 de 12 desbloqueados</p>
+            <h2 style="color:var(--light);text-align:center;font-family:'Fredoka One',cursive;">🏅 Logros</h2>
+            <p style="color:rgba(255,255,255,0.6);text-align:center;" id="achievementProgress">0 de 12</p>
             <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
     </div>
-    <!-- Challenge Modal -->
-    <div class="modal-overlay" id="challengeModal">
-        <div class="leaderboard-modal">
-            <button class="close-btn" onclick="closeChallengeModal()">×</button>
-            <div id="challengeContent" style="text-align:center;padding:20px;"></div>
-        </div>
-    </div>
-    <!-- Classroom Modal -->
-    <div class="modal-overlay" id="classroomModal">
-        <div class="leaderboard-modal">
-            <button class="close-btn" onclick="closeClassroomModal()">×</button>
-            <div id="classroomContent" style="text-align:center;padding:20px;"></div>
-        </div>
-    </div>
+
     <script>
+        // =====================================================
+        // 🔥 FIREBASE CONFIGURATION - REPLACE WITH YOUR CONFIG
+        // =====================================================
+                const firebaseConfig = {
+            apiKey: "AIzaSyCyjx25i8U6tP0jxGBpyzmKI1cAKjnsiNc",
+            authDomain: "spanish-quest-fa18f.firebaseapp.com",
+            databaseURL: "https://spanish-quest-fa18f-default-rtdb.firebaseio.com",
+            projectId: "spanish-quest-fa18f",
+            storageBucket: "spanish-quest-fa18f.firebasestorage.app",
+            messagingSenderId: "113801000060",
+            appId: "1:113801000060:web:89432cbbab4406900785f9"
+        };
+        
+        // Initialize Firebase
+        let db = null;
+        let firebaseInitialized = false;
+        
+        function initFirebase() {
+            try {
+                if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+                    console.warn("Firebase not configured - using local mode");
+                    return false;
+                }
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                firebaseInitialized = true;
+                console.log("Firebase initialized!");
+                return true;
+            } catch (e) {
+                console.error("Firebase init error:", e);
+                return false;
+            }
+        }
+
         // ==================== GAME DATA ====================
         const countries = [
-            { id: 'spain', name: 'España', flag: '🇪🇸', capital: 'Madrid', population: '47 millones', class: 'country-spain', funFact: 'España tiene más bares por habitante que cualquier otro país de la UE.' },
-            { id: 'mexico', name: 'México', flag: '🇲🇽', capital: 'Ciudad de México', population: '128 millones', class: 'country-mexico', funFact: 'México introdujo el chocolate, el chile y el maíz al mundo.' },
-            { id: 'argentina', name: 'Argentina', flag: '🇦🇷', capital: 'Buenos Aires', population: '45 millones', class: 'country-argentina', funFact: 'Argentina tiene más psicólogos per cápita que cualquier otro país.' },
-            { id: 'colombia', name: 'Colombia', flag: '🇨🇴', capital: 'Bogotá', population: '51 millones', class: 'country-colombia', funFact: 'Colombia es el segundo país con mayor biodiversidad del planeta.' },
-            { id: 'peru', name: 'Perú', flag: '🇵🇪', capital: 'Lima', population: '33 millones', class: 'country-peru', funFact: 'Perú tiene más de 3,000 variedades diferentes de papas.' },
-            { id: 'chile', name: 'Chile', flag: '🇨🇱', capital: 'Santiago', population: '19 millones', class: 'country-chile', funFact: 'Chile tiene el desierto más seco del mundo: el Atacama.' },
-            { id: 'ecuador', name: 'Ecuador', flag: '🇪🇨', capital: 'Quito', population: '18 millones', class: 'country-ecuador', funFact: 'Las Islas Galápagos inspiraron la teoría de la evolución de Darwin.' },
-            { id: 'venezuela', name: 'Venezuela', flag: '🇻🇪', capital: 'Caracas', population: '28 millones', class: 'country-venezuela', funFact: 'Venezuela tiene la cascada más alta del mundo: el Salto Ángel.' },
-            { id: 'cuba', name: 'Cuba', flag: '🇨🇺', capital: 'La Habana', population: '11 millones', class: 'country-cuba', funFact: 'Cuba tiene uno de los mejores sistemas de salud de Latinoamérica.' },
-            { id: 'costarica', name: 'Costa Rica', flag: '🇨🇷', capital: 'San José', population: '5 millones', class: 'country-costarica', funFact: 'Costa Rica no tiene ejército desde 1948.' }
+            { id: 'spain', name: 'España', flag: '🇪🇸', capital: 'Madrid', population: '47M', class: 'country-spain', funFact: 'España tiene más bares por habitante que cualquier otro país de la UE.' },
+            { id: 'mexico', name: 'México', flag: '🇲🇽', capital: 'Ciudad de México', population: '128M', class: 'country-mexico', funFact: 'México introdujo el chocolate, el chile y el maíz al mundo.' },
+            { id: 'argentina', name: 'Argentina', flag: '🇦🇷', capital: 'Buenos Aires', population: '45M', class: 'country-argentina', funFact: 'Argentina tiene más psicólogos per cápita que cualquier otro país.' },
+            { id: 'colombia', name: 'Colombia', flag: '🇨🇴', capital: 'Bogotá', population: '51M', class: 'country-colombia', funFact: 'Colombia es el segundo país con mayor biodiversidad.' },
+            { id: 'peru', name: 'Perú', flag: '🇵🇪', capital: 'Lima', population: '33M', class: 'country-peru', funFact: 'Perú tiene más de 3,000 variedades de papas.' },
+            { id: 'chile', name: 'Chile', flag: '🇨🇱', capital: 'Santiago', population: '19M', class: 'country-chile', funFact: 'Chile tiene el desierto más seco: el Atacama.' },
+            { id: 'ecuador', name: 'Ecuador', flag: '🇪🇨', capital: 'Quito', population: '18M', class: 'country-ecuador', funFact: 'Galápagos inspiró la teoría de la evolución.' },
+            { id: 'venezuela', name: 'Venezuela', flag: '🇻🇪', capital: 'Caracas', population: '28M', class: 'country-venezuela', funFact: 'Venezuela tiene la cascada más alta: Salto Ángel.' },
+            { id: 'cuba', name: 'Cuba', flag: '🇨🇺', capital: 'La Habana', population: '11M', class: 'country-cuba', funFact: 'Cuba tiene excelente sistema de salud.' },
+            { id: 'costarica', name: 'Costa Rica', flag: '🇨🇷', capital: 'San José', population: '5M', class: 'country-costarica', funFact: 'Costa Rica no tiene ejército desde 1948.' }
         ];
 
         const questionBank = {
             A1: [
-                { question: "¿Cuál es el artículo correcto? '___ libro'", answers: ["El", "La", "Los", "Las"], correct: 0, category: "gramatica", explanation: "'Libro' es masculino singular, por eso usamos 'el'." },
-                { question: "Completa: 'Yo ___ estudiante.'", answers: ["soy", "eres", "es", "somos"], correct: 0, category: "gramatica", explanation: "Con 'yo' siempre usamos 'soy'." },
-                { question: "¿Cómo se dice 'I have' en español?", answers: ["Yo tengo", "Yo soy", "Yo estoy", "Yo hago"], correct: 0, category: "gramatica", explanation: "'Tener' significa 'to have'." },
-                { question: "Completa: 'Ella ___ de México.'", answers: ["es", "está", "son", "están"], correct: 0, category: "gramatica", explanation: "Usamos 'ser' para origen o nacionalidad." },
-                { question: "¿Cuál es el plural de 'casa'?", answers: ["casas", "casaes", "casis", "casa"], correct: 0, category: "gramatica", explanation: "Añadimos -s a palabras que terminan en vocal." },
-                { question: "¿Qué significa 'buenos días'?", answers: ["Buenos días (mañana)", "Buenas noches", "Buenas tardes", "Adiós"], correct: 0, category: "vocabulario", explanation: "'Buenos días' se usa por la mañana." },
-                { question: "¿Cómo se dice 'water' en español?", answers: ["agua", "leche", "jugo", "café"], correct: 0, category: "vocabulario", explanation: "'Agua' es water." },
-                { question: "¿Qué día viene después del lunes?", answers: ["martes", "miércoles", "domingo", "viernes"], correct: 0, category: "vocabulario", explanation: "Orden: lunes, martes, miércoles..." },
-                { question: "¿Cuál es el número 'quince'?", answers: ["15", "50", "5", "25"], correct: 0, category: "vocabulario", explanation: "Quince = 15." },
-                { question: "¿Qué color es el cielo?", answers: ["azul", "verde", "rojo", "amarillo"], correct: 0, category: "vocabulario", explanation: "'Azul' es el color del cielo." },
-                { question: "¿Cuál es la capital de España?", answers: ["Madrid", "Barcelona", "Sevilla", "Valencia"], correct: 0, category: "cultura", explanation: "Madrid es la capital de España." },
-                { question: "¿Qué lengua se habla en México?", answers: ["español", "portugués", "italiano", "francés"], correct: 0, category: "cultura", explanation: "En México se habla español." }
+                { question: "¿Cuál es el artículo? '___ libro'", answers: ["El", "La", "Los", "Las"], correct: 0, category: "gramatica", explanation: "'Libro' es masculino singular." },
+                { question: "Completa: 'Yo ___ estudiante.'", answers: ["soy", "eres", "es", "somos"], correct: 0, category: "gramatica", explanation: "Con 'yo' usamos 'soy'." },
+                { question: "'I have' en español es...", answers: ["Yo tengo", "Yo soy", "Yo estoy", "Yo hago"], correct: 0, category: "gramatica", explanation: "'Tener' = to have." },
+                { question: "Completa: 'Ella ___ de México.'", answers: ["es", "está", "son", "están"], correct: 0, category: "gramatica", explanation: "'Ser' para origen." },
+                { question: "El plural de 'casa' es...", answers: ["casas", "casaes", "casis", "casa"], correct: 0, category: "gramatica", explanation: "Añadimos -s." },
+                { question: "'Buenos días' se usa por la...", answers: ["mañana", "noche", "tarde", "siempre"], correct: 0, category: "vocabulario", explanation: "Por la mañana." },
+                { question: "'Water' en español es...", answers: ["agua", "leche", "jugo", "café"], correct: 0, category: "vocabulario", explanation: "Agua = water." },
+                { question: "Después del lunes viene...", answers: ["martes", "miércoles", "domingo", "viernes"], correct: 0, category: "vocabulario", explanation: "Lunes, martes, miércoles..." },
+                { question: "'Quince' es el número...", answers: ["15", "50", "5", "25"], correct: 0, category: "vocabulario", explanation: "Quince = 15." },
+                { question: "El cielo es de color...", answers: ["azul", "verde", "rojo", "amarillo"], correct: 0, category: "vocabulario", explanation: "El cielo es azul." },
+                { question: "La capital de España es...", answers: ["Madrid", "Barcelona", "Sevilla", "Valencia"], correct: 0, category: "cultura", explanation: "Madrid es la capital." },
+                { question: "En México se habla...", answers: ["español", "portugués", "italiano", "francés"], correct: 0, category: "cultura", explanation: "Se habla español." }
             ],
             A2: [
-                { question: "Completa: 'Hoy yo ___ un café.'", answers: ["he tomado", "ha tomado", "has tomado", "hemos tomado"], correct: 0, category: "gramatica", explanation: "Con 'yo' usamos 'he' + participio." },
-                { question: "Completa: 'Ella nunca ___ a España.'", answers: ["ha viajado", "he viajado", "has viajado", "han viajado"], correct: 0, category: "gramatica", explanation: "Con 'ella' usamos 'ha' + participio." },
-                { question: "'Nosotros ___ la película.'", answers: ["hemos visto", "he visto", "han visto", "ha visto"], correct: 0, category: "gramatica", explanation: "Con 'nosotros' usamos 'hemos'." },
-                { question: "'Mi hermana ___ muy cansada.'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "'Estar' para estados temporales." },
-                { question: "'Barcelona ___ una ciudad bonita.'", answers: ["es", "está", "son", "están"], correct: 0, category: "gramatica", explanation: "'Ser' para características permanentes." },
-                { question: "'¿Dónde ___ el supermercado?'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "'Estar' para ubicación física." },
-                { question: "'La sopa ___ muy caliente.'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "Temperatura es estado temporal." },
-                { question: "'Los estudiantes ___ de Francia.'", answers: ["son", "están", "es", "está"], correct: 0, category: "gramatica", explanation: "Origen es permanente, usamos 'ser'." },
-                { question: "¿Qué significa 'desayuno'?", answers: ["primera comida del día", "almuerzo", "cena", "merienda"], correct: 0, category: "vocabulario", explanation: "'Desayuno' es la primera comida." },
-                { question: "El opuesto de 'grande' es...", answers: ["pequeño", "alto", "largo", "ancho"], correct: 0, category: "vocabulario", explanation: "'Grande' y 'pequeño' son opuestos." },
-                { question: "¿Dónde duermes?", answers: ["en la cama", "en la cocina", "en el jardín", "en el garaje"], correct: 0, category: "vocabulario", explanation: "Dormimos en la cama." },
-                { question: "'A mí ___ el chocolate.'", answers: ["me gusta", "me gustan", "te gusta", "le gusta"], correct: 0, category: "gramatica", explanation: "'Gusta' singular para 'el chocolate'." },
-                { question: "'A ellos ___ las películas.'", answers: ["les gustan", "les gusta", "le gustan", "nos gustan"], correct: 0, category: "gramatica", explanation: "'Gustan' plural para 'las películas'." },
-                { question: "'Hace mucho frío' significa...", answers: ["Hace mucho frío", "Hace calor", "Llueve", "Hace sol"], correct: 0, category: "vocabulario", explanation: "'Hacer frío' = it's cold." },
-                { question: "'Son las tres y media' =", answers: ["3:30", "3:15", "3:45", "3:00"], correct: 0, category: "vocabulario", explanation: "'Y media' = 30 minutos." },
-                { question: "'¿___ vives?' - 'En Madrid.'", answers: ["Dónde", "Cuándo", "Quién", "Qué"], correct: 0, category: "gramatica", explanation: "'Dónde' pregunta por lugar." },
-                { question: "'¿___ cuesta?'", answers: ["Cuánto", "Cuándo", "Cómo", "Dónde"], correct: 0, category: "gramatica", explanation: "'Cuánto' para precio." },
-                { question: "¿Cuál es la moneda de España?", answers: ["el euro", "el peso", "el dólar", "la libra"], correct: 0, category: "cultura", explanation: "España usa el euro." },
-                { question: "La paella es de...", answers: ["España", "México", "Argentina", "Perú"], correct: 0, category: "cultura", explanation: "La paella es de Valencia." },
-                { question: "El tango es de...", answers: ["Argentina", "España", "Cuba", "Colombia"], correct: 0, category: "cultura", explanation: "El tango es de Buenos Aires." },
-                { question: "'El gato está ___ la mesa.'", answers: ["debajo de", "a", "con", "sin"], correct: 0, category: "gramatica", explanation: "'Debajo de' = under." },
-                { question: "'Voy ___ supermercado.'", answers: ["al", "a el", "en el", "del"], correct: 0, category: "gramatica", explanation: "'A + el' = 'al'." },
-                { question: "'Las casas son ___.'", answers: ["bonitas", "bonito", "bonitos", "bonita"], correct: 0, category: "gramatica", explanation: "Femenino plural = 'bonitas'." },
-                { question: "'¿Tienes el libro?' - 'Sí, ___ tengo.'", answers: ["lo", "la", "le", "les"], correct: 0, category: "gramatica", explanation: "'Lo' para masculino singular." }
+                { question: "Completa: 'Hoy yo ___ un café.'", answers: ["he tomado", "ha tomado", "has tomado", "hemos tomado"], correct: 0, category: "gramatica", explanation: "Yo + he + participio." },
+                { question: "'Ella nunca ___ a España.'", answers: ["ha viajado", "he viajado", "has viajado", "han viajado"], correct: 0, category: "gramatica", explanation: "Ella + ha + participio." },
+                { question: "'Nosotros ___ la película.'", answers: ["hemos visto", "he visto", "han visto", "ha visto"], correct: 0, category: "gramatica", explanation: "Nosotros + hemos." },
+                { question: "'Mi hermana ___ cansada.'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "'Estar' para estados temporales." },
+                { question: "'Barcelona ___ bonita.'", answers: ["es", "está", "son", "están"], correct: 0, category: "gramatica", explanation: "'Ser' para características." },
+                { question: "'¿Dónde ___ el banco?'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "'Estar' para ubicación." },
+                { question: "'La sopa ___ caliente.'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "Temperatura = estar." },
+                { question: "'Los chicos ___ de Francia.'", answers: ["son", "están", "es", "está"], correct: 0, category: "gramatica", explanation: "Origen = ser." },
+                { question: "'Desayuno' significa...", answers: ["primera comida", "almuerzo", "cena", "merienda"], correct: 0, category: "vocabulario", explanation: "Primera comida del día." },
+                { question: "Opuesto de 'grande':", answers: ["pequeño", "alto", "largo", "ancho"], correct: 0, category: "vocabulario", explanation: "Grande ↔ pequeño." },
+                { question: "¿Dónde duermes?", answers: ["en la cama", "en la cocina", "en el jardín", "en el garaje"], correct: 0, category: "vocabulario", explanation: "En la cama." },
+                { question: "'A mí ___ el chocolate.'", answers: ["me gusta", "me gustan", "te gusta", "le gusta"], correct: 0, category: "gramatica", explanation: "'Gusta' singular." },
+                { question: "'A ellos ___ las películas.'", answers: ["les gustan", "les gusta", "le gustan", "nos gustan"], correct: 0, category: "gramatica", explanation: "'Gustan' plural." },
+                { question: "'Hace frío' = ...", answers: ["It's cold", "It's hot", "It's raining", "It's sunny"], correct: 0, category: "vocabulario", explanation: "Hace frío = It's cold." },
+                { question: "'Las tres y media' = ...", answers: ["3:30", "3:15", "3:45", "3:00"], correct: 0, category: "vocabulario", explanation: "Y media = :30." },
+                { question: "'¿___ vives?' - 'En Madrid.'", answers: ["Dónde", "Cuándo", "Quién", "Qué"], correct: 0, category: "gramatica", explanation: "Dónde = where." },
+                { question: "'¿___ cuesta?'", answers: ["Cuánto", "Cuándo", "Cómo", "Dónde"], correct: 0, category: "gramatica", explanation: "Cuánto = how much." },
+                { question: "La moneda de España es...", answers: ["el euro", "el peso", "el dólar", "la libra"], correct: 0, category: "cultura", explanation: "España usa el euro." },
+                { question: "La paella es de...", answers: ["España", "México", "Argentina", "Perú"], correct: 0, category: "cultura", explanation: "De Valencia, España." },
+                { question: "El tango es de...", answers: ["Argentina", "España", "Cuba", "Colombia"], correct: 0, category: "cultura", explanation: "De Buenos Aires." }
             ],
             B1: [
                 { question: "'Espero que tú ___ bien.'", answers: ["estés", "estás", "estar", "estarás"], correct: 0, category: "gramatica", explanation: "'Espero que' + subjuntivo." },
-                { question: "'Quiero que ella ___ la verdad.'", answers: ["diga", "dice", "decir", "dirá"], correct: 0, category: "gramatica", explanation: "'Querer que' + subjuntivo." },
-                { question: "'Es importante que ___.'", answers: ["estudiemos", "estudiamos", "estudiar", "estudiaremos"], correct: 0, category: "gramatica", explanation: "'Es importante que' + subjuntivo." },
-                { question: "'Si tuviera dinero, ___ un coche.'", answers: ["compraría", "compro", "compré", "he comprado"], correct: 0, category: "gramatica", explanation: "Si + imperfecto subjuntivo → condicional." },
-                { question: "'Me ___ ir de vacaciones.'", answers: ["gustaría", "gusta", "gustó", "gustaba"], correct: 0, category: "gramatica", explanation: "Condicional para deseos corteses." },
-                { question: "'Cuando era niño, ___ al parque.'", answers: ["iba", "fui", "voy", "iré"], correct: 0, category: "gramatica", explanation: "Imperfecto para acciones habituales." },
+                { question: "'Quiero que ella ___.'", answers: ["venga", "viene", "venir", "vendrá"], correct: 0, category: "gramatica", explanation: "'Querer que' + subjuntivo." },
+                { question: "'Es importante que ___.'", answers: ["estudiemos", "estudiamos", "estudiar", "estudiaremos"], correct: 0, category: "gramatica", explanation: "'Es importante que' + subj." },
+                { question: "'Si tuviera dinero, ___.'", answers: ["compraría", "compro", "compré", "he comprado"], correct: 0, category: "gramatica", explanation: "Si + subj. → condicional." },
+                { question: "'Me ___ ir de vacaciones.'", answers: ["gustaría", "gusta", "gustó", "gustaba"], correct: 0, category: "gramatica", explanation: "Condicional para deseos." },
+                { question: "'Cuando era niño, ___ al parque.'", answers: ["iba", "fui", "voy", "iré"], correct: 0, category: "gramatica", explanation: "Imperfecto para hábitos." },
                 { question: "'Ayer ___ a María.'", answers: ["vi", "veía", "veo", "he visto"], correct: 0, category: "gramatica", explanation: "Indefinido para acciones puntuales." },
                 { question: "'Mientras yo ___, ella cocinaba.'", answers: ["estudiaba", "estudié", "estudio", "estudiaré"], correct: 0, category: "gramatica", explanation: "'Mientras' + imperfecto." },
-                { question: "'La chica ___ conocí es simpática.'", answers: ["que", "quien", "cual", "cuyo"], correct: 0, category: "gramatica", explanation: "'Que' es el relativo más común." },
-                { question: "'Echar de menos' significa...", answers: ["extrañar", "tirar", "perder", "olvidar"], correct: 0, category: "vocabulario", explanation: "'Echar de menos' = to miss." },
-                { question: "'Tener ganas de' significa...", answers: ["tener deseo de", "tener miedo", "tener hambre", "estar cansado"], correct: 0, category: "vocabulario", explanation: "'Tener ganas de' = feel like." },
-                { question: "'Este regalo es ___ ti.'", answers: ["para", "por", "a", "de"], correct: 0, category: "gramatica", explanation: "'Para' indica destinatario." },
-                { question: "'Gracias ___ tu ayuda.'", answers: ["por", "para", "a", "de"], correct: 0, category: "gramatica", explanation: "'Por' indica causa." },
-                { question: "¿Qué es 'la siesta'?", answers: ["Descanso después de comer", "Fiesta", "Comida", "Baile"], correct: 0, category: "cultura", explanation: "La siesta es descansar después de comer." },
-                { question: "El Día de los Muertos es de...", answers: ["México", "España", "Argentina", "Chile"], correct: 0, category: "cultura", explanation: "Se celebra en México." },
-                { question: "¿Qué es 'el mate'?", answers: ["Infusión argentina", "Baile español", "Comida mexicana", "Instrumento"], correct: 0, category: "cultura", explanation: "El mate es infusión de yerba mate." },
-                { question: "'Costar un ojo de la cara' =", answers: ["ser muy caro", "ser difícil", "doler", "ser feo"], correct: 0, category: "vocabulario", explanation: "Significa que algo es muy caro." },
-                { question: "'Estar como una cabra' =", answers: ["estar loco", "estar enfermo", "estar cansado", "estar feliz"], correct: 0, category: "vocabulario", explanation: "Significa estar loco." }
+                { question: "'La chica ___ conocí...'", answers: ["que", "quien", "cual", "cuyo"], correct: 0, category: "gramatica", explanation: "'Que' es el más común." },
+                { question: "'Echar de menos' = ...", answers: ["extrañar", "tirar", "perder", "olvidar"], correct: 0, category: "vocabulario", explanation: "Echar de menos = to miss." },
+                { question: "'Tener ganas de' = ...", answers: ["querer hacer", "tener miedo", "tener hambre", "estar cansado"], correct: 0, category: "vocabulario", explanation: "= feel like doing." },
+                { question: "'Este regalo es ___ ti.'", answers: ["para", "por", "a", "de"], correct: 0, category: "gramatica", explanation: "'Para' = destinatario." },
+                { question: "'Gracias ___ tu ayuda.'", answers: ["por", "para", "a", "de"], correct: 0, category: "gramatica", explanation: "'Por' = causa." },
+                { question: "'La siesta' es...", answers: ["descanso después de comer", "fiesta", "comida", "baile"], correct: 0, category: "cultura", explanation: "Descanso después de comer." },
+                { question: "Día de los Muertos es de...", answers: ["México", "España", "Argentina", "Chile"], correct: 0, category: "cultura", explanation: "Se celebra en México." },
+                { question: "'El mate' es...", answers: ["infusión argentina", "baile español", "comida mexicana", "instrumento"], correct: 0, category: "cultura", explanation: "Infusión de yerba mate." }
             ]
         };
 
-        const achievements = [
-            { id: 'first_quest', name: 'Primera Misión', desc: 'Completa tu primera misión', icon: '🎯', unlocked: false },
-            { id: 'perfect_score', name: 'Perfeccionista', desc: 'Consigue 5/5', icon: '💯', unlocked: false },
-            { id: 'speed_demon', name: 'Rayo Veloz', desc: 'Responde en <5 segundos', icon: '⚡', unlocked: false },
-            { id: 'explorer', name: 'Explorador', desc: 'Visita 5 países', icon: '🧭', unlocked: false },
-            { id: 'world_traveler', name: 'Viajero Mundial', desc: 'Completa todos', icon: '🌍', unlocked: false },
-            { id: 'streak_3', name: 'En Racha', desc: 'Racha de 3 días', icon: '🔥', unlocked: false },
-            { id: 'streak_7', name: 'Dedicación', desc: 'Racha de 7 días', icon: '💪', unlocked: false },
-            { id: 'no_hints', name: 'Sin Ayuda', desc: 'Sin usar pistas', icon: '🧠', unlocked: false },
-            { id: 'grammar_master', name: 'Gramático', desc: '20 de gramática', icon: '📝', unlocked: false },
-            { id: 'culture_expert', name: 'Cultural', desc: '10 de cultura', icon: '🎭', unlocked: false },
-            { id: 'vocabulary_king', name: 'Vocabulario', desc: '20 de vocabulario', icon: '📚', unlocked: false },
-            { id: 'star_collector', name: 'Coleccionista', desc: '30 estrellas', icon: '⭐', unlocked: false }
-        ];
-
         const flashcards = [
-            { front: "Ser vs Estar", back: "SER: identidad, origen. ESTAR: ubicación, estado temporal.", category: "Gramática" },
-            { front: "Pretérito Perfecto", back: "He/Has/Ha/Hemos/Han + participio (-ado/-ido)", category: "Gramática" },
-            { front: "Gustar", back: "A mí ME gusta, A ti TE gusta, A él LE gusta", category: "Gramática" },
-            { front: "Por vs Para", back: "POR: causa. PARA: destino, propósito.", category: "Gramática" },
+            { front: "Ser vs Estar", back: "SER: identidad, origen. ESTAR: ubicación, temporal.", category: "Gramática" },
+            { front: "Pretérito Perfecto", back: "He/Has/Ha/Hemos/Han + participio", category: "Gramática" },
+            { front: "Gustar", back: "A mí ME gusta, A ti TE gusta...", category: "Gramática" },
+            { front: "Por vs Para", back: "POR: causa. PARA: destino.", category: "Gramática" },
             { front: "Subjuntivo", back: "Después de: querer que, esperar que...", category: "Gramática" },
             { front: "Buenos días", back: "Good morning", category: "Saludos" },
-            { front: "Buenas tardes", back: "Good afternoon", category: "Saludos" },
-            { front: "¿Cuánto cuesta?", back: "How much does it cost?", category: "Frases" },
+            { front: "¿Cuánto cuesta?", back: "How much?", category: "Frases" },
             { front: "Echar de menos", back: "To miss someone", category: "Expresiones" },
-            { front: "Tener ganas de", back: "To feel like", category: "Expresiones" }
+            { front: "Tener ganas de", back: "To feel like", category: "Expresiones" },
+            { front: "Hace frío/calor", back: "It's cold/hot", category: "Clima" }
+        ];
+
+        const achievements = [
+            { id: 'first', name: 'Primera Misión', desc: 'Completa una misión', icon: '🎯', unlocked: false },
+            { id: 'perfect', name: 'Perfeccionista', desc: '5/5 correctas', icon: '💯', unlocked: false },
+            { id: 'speed', name: 'Rayo', desc: 'Responde en <5s', icon: '⚡', unlocked: false },
+            { id: 'explorer', name: 'Explorador', desc: '5 países', icon: '🧭', unlocked: false },
+            { id: 'traveler', name: 'Viajero', desc: '10 países', icon: '🌍', unlocked: false },
+            { id: 'grammar', name: 'Gramático', desc: '20 gramática', icon: '📝', unlocked: false },
+            { id: 'culture', name: 'Cultural', desc: '10 cultura', icon: '🎭', unlocked: false },
+            { id: 'vocab', name: 'Vocabulario', desc: '20 vocabulario', icon: '📚', unlocked: false }
         ];
 
         // ==================== GAME STATE ====================
         let gameState = {
-            playerName: '', difficulty: 'A2', totalScore: 0, totalStars: 0, streak: 0, lastPlayDate: null,
-            completedCountries: {}, currentCountry: null, currentQuestions: [], currentQuestionIndex: 0,
-            correctAnswers: 0, wrongAnswers: [], timer: 30, timerInterval: null, hintsRemaining: 2,
-            hintsUsedThisQuiz: false, currentQuizScore: 0, soundEnabled: true, theme: 'dark',
-            selectedCategory: 'all', achievements: JSON.parse(JSON.stringify(achievements)),
-            categoryStats: { gramatica: 0, vocabulario: 0, cultura: 0 }, flashcardIndex: 0, answerStartTime: null,
-            isTeacher: false, classroomPin: null, classroomStudents: [], isStudent: false, teacherName: ''
+            playerName: '', difficulty: 'A2', totalScore: 0, totalStars: 0,
+            completedCountries: {}, selectedCategory: 'all', soundEnabled: true, theme: 'dark',
+            achievements: JSON.parse(JSON.stringify(achievements)),
+            categoryStats: { gramatica: 0, vocabulario: 0, cultura: 0 },
+            // Quiz state
+            currentCountry: null, currentQuestions: [], currentQuestionIndex: 0,
+            correctAnswers: 0, wrongAnswers: [], currentQuizScore: 0, hintsRemaining: 2,
+            timer: 30, timerInterval: null, answerStartTime: null,
+            // Classroom state
+            isTeacher: false, isStudent: false, classroomId: null, studentId: null,
+            classQuestions: [], classQuestionIndex: 0, liveTimer: null
         };
+
+        // ==================== INITIALIZATION ====================
+        function init() {
+            initFirebase();
+            loadGameState();
+            createStars();
+            updateStats();
+            generateCountryButtons();
+            
+            document.body.dataset.theme = gameState.theme;
+            document.getElementById('themeToggle').textContent = gameState.theme === 'dark' ? '🌙' : '☀️';
+            document.getElementById('soundToggle').textContent = gameState.soundEnabled ? '🔊' : '🔇';
+            if (gameState.playerName) document.getElementById('playerName').value = gameState.playerName;
+            
+            document.querySelectorAll('.difficulty-btn').forEach(b => 
+                b.classList.toggle('selected', b.dataset.level === gameState.difficulty));
+        }
+
+        function createStars() {
+            const c = document.getElementById('stars'); c.innerHTML = '';
+            for (let i = 0; i < 60; i++) {
+                const s = document.createElement('div'); s.className = 'star';
+                s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s`;
+                c.appendChild(s);
+            }
+        }
+
+        function saveGameState() {
+            localStorage.setItem('spanishQuestSave', JSON.stringify({
+                playerName: gameState.playerName, difficulty: gameState.difficulty,
+                totalScore: gameState.totalScore, totalStars: gameState.totalStars,
+                completedCountries: gameState.completedCountries, soundEnabled: gameState.soundEnabled,
+                theme: gameState.theme, achievements: gameState.achievements, categoryStats: gameState.categoryStats
+            }));
+        }
+
+        function loadGameState() {
+            const saved = localStorage.getItem('spanishQuestSave');
+            if (saved) Object.assign(gameState, JSON.parse(saved));
+        }
 
         // ==================== AUDIO ====================
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
-        function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); }
         function playSound(type) {
             if (!gameState.soundEnabled) return;
-            initAudio();
+            if (!audioCtx) audioCtx = new AudioContext();
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
             const sounds = {
-                correct: () => { osc.frequency.setValueAtTime(523, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime+0.1); osc.frequency.setValueAtTime(784, audioCtx.currentTime+0.2); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.4); osc.start(); osc.stop(audioCtx.currentTime+0.4); },
-                wrong: () => { osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.frequency.setValueAtTime(150, audioCtx.currentTime+0.15); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.3); osc.start(); osc.stop(audioCtx.currentTime+0.3); },
+                correct: () => { osc.frequency.setValueAtTime(523, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime+0.1); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.3); osc.start(); osc.stop(audioCtx.currentTime+0.3); },
+                wrong: () => { osc.frequency.setValueAtTime(200, audioCtx.currentTime); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.2); osc.start(); osc.stop(audioCtx.currentTime+0.2); },
                 tick: () => { osc.frequency.setValueAtTime(800, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.05); osc.start(); osc.stop(audioCtx.currentTime+0.05); },
                 click: () => { osc.frequency.setValueAtTime(600, audioCtx.currentTime); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.08); osc.start(); osc.stop(audioCtx.currentTime+0.08); }
             };
             if (sounds[type]) sounds[type]();
         }
 
-        // ==================== INIT ====================
-        function init() {
-            loadGameState(); createStars(); updateStats(); checkStreak(); generateCountryButtons(); updateMascot('wave');
+        // ==================== NAVIGATION ====================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goHome() {
+            playSound('click');
+            if (gameState.classroomId && gameState.isTeacher) endClassroom();
+            if (gameState.classroomId && gameState.isStudent) leaveClassroom();
+            showScreen('welcomeScreen');
+        }
+
+        function selectDifficulty(level) {
+            playSound('click');
+            gameState.difficulty = level;
+            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.toggle('selected', b.dataset.level === level));
+        }
+
+        function toggleTheme() {
+            playSound('click');
+            gameState.theme = gameState.theme === 'dark' ? 'light' : 'dark';
             document.body.dataset.theme = gameState.theme;
             document.getElementById('themeToggle').textContent = gameState.theme === 'dark' ? '🌙' : '☀️';
+            saveGameState();
+        }
+
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
             document.getElementById('soundToggle').textContent = gameState.soundEnabled ? '🔊' : '🔇';
-            document.getElementById('soundToggle').classList.toggle('muted', !gameState.soundEnabled);
-            if (gameState.playerName) document.getElementById('playerName').value = gameState.playerName;
-            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.toggle('selected', b.dataset.level === gameState.difficulty));
-        }
-        function createStars() {
-            const c = document.getElementById('stars'); c.innerHTML = '';
-            for (let i = 0; i < 70; i++) {
-                const s = document.createElement('div'); s.className = 'star';
-                s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;width:${Math.random()*2+1}px;height:${s.style.width}`;
-                c.appendChild(s);
-            }
-        }
-        function saveGameState() {
-            localStorage.setItem('spanishQuestSave', JSON.stringify({
-                playerName: gameState.playerName, difficulty: gameState.difficulty, totalScore: gameState.totalScore,
-                totalStars: gameState.totalStars, streak: gameState.streak, lastPlayDate: gameState.lastPlayDate,
-                completedCountries: gameState.completedCountries, soundEnabled: gameState.soundEnabled,
-                theme: gameState.theme, achievements: gameState.achievements, categoryStats: gameState.categoryStats
-            }));
-            updateLeaderboard();
-        }
-        function loadGameState() {
-            const saved = localStorage.getItem('spanishQuestSave');
-            if (saved) Object.assign(gameState, JSON.parse(saved));
+            if (gameState.soundEnabled) playSound('click');
+            saveGameState();
         }
 
-        // ==================== LEADERBOARD & ACHIEVEMENTS ====================
-        function updateLeaderboard() {
-            if (!gameState.playerName) return;
-            let lb = JSON.parse(localStorage.getItem('spanishQuestLeaderboard') || '[]');
-            const idx = lb.findIndex(p => p.name === gameState.playerName);
-            const data = { name: gameState.playerName, score: gameState.totalScore, stars: gameState.totalStars, countries: Object.keys(gameState.completedCountries).length };
-            idx >= 0 ? lb[idx] = data : lb.push(data);
-            lb.sort((a,b) => b.score - a.score);
-            localStorage.setItem('spanishQuestLeaderboard', JSON.stringify(lb.slice(0,10)));
-        }
-        function showLeaderboard() {
-            playSound('click');
-            const lb = JSON.parse(localStorage.getItem('spanishQuestLeaderboard') || '[]');
-            document.getElementById('leaderboardList').innerHTML = lb.length === 0 ? '<li class="leaderboard-item" style="justify-content:center;color:rgba(255,255,255,0.6);">¡Sé el primero!</li>' : lb.map((p,i) => `<li class="leaderboard-item ${p.name===gameState.playerName?'current-player':''}"><span class="leaderboard-rank ${['gold','silver','bronze'][i]||''}">${i+1}</span><div class="leaderboard-info"><div class="leaderboard-name">${p.name}${p.name===gameState.playerName?' (Tú)':''}</div><div class="leaderboard-stats">⭐${p.stars} · 🗺️${p.countries}</div></div><span class="leaderboard-score">${p.score}</span></li>`).join('');
-            document.getElementById('leaderboardModal').classList.add('active');
-        }
-        function closeLeaderboard() { document.getElementById('leaderboardModal').classList.remove('active'); }
-        function showAchievements() {
-            playSound('click');
-            const unlocked = gameState.achievements.filter(a => a.unlocked).length;
-            document.getElementById('achievementProgress').textContent = `${unlocked} de ${gameState.achievements.length} desbloqueados`;
-            document.getElementById('achievementsGrid').innerHTML = gameState.achievements.map(a => `<div class="achievement-card ${a.unlocked?'unlocked':'locked'}"><div class="achievement-card-icon">${a.icon}</div><div class="achievement-card-name">${a.name}</div><div class="achievement-card-desc">${a.desc}</div></div>`).join('');
-            document.getElementById('achievementsModal').classList.add('active');
-        }
-        function closeAchievements() { document.getElementById('achievementsModal').classList.remove('active'); }
-        function checkAndUnlockAchievement(id) {
-            const a = gameState.achievements.find(x => x.id === id);
-            if (a && !a.unlocked) { a.unlocked = true; document.getElementById('achievementName').innerHTML = `<span>${a.icon}</span> ${a.name}`; document.getElementById('achievementUnlocked').classList.add('show'); saveGameState(); return true; }
-            return false;
+        function updateStats() {
+            document.getElementById('totalScore').textContent = gameState.totalScore;
+            document.getElementById('totalStars').textContent = gameState.totalStars;
         }
 
-        // ==================== STREAK & MASCOT ====================
-        function checkStreak() {
-            const today = new Date().toDateString();
-            if (gameState.lastPlayDate) {
-                const last = new Date(gameState.lastPlayDate), yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-                if (last.toDateString() !== yesterday.toDateString() && last.toDateString() !== today) gameState.streak = 0;
+        function createConfetti() {
+            const c = document.getElementById('confettiContainer'), colors = ['#FF6B35','#F7C948','#2ECC71','#9B59B6','#3498DB'];
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div'); p.className = 'confetti';
+                p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.5}s`;
+                c.appendChild(p); setTimeout(() => p.remove(), 3000);
             }
-            updateStreakDisplay();
         }
-        function updateStreak() {
-            const today = new Date().toDateString();
-            if (gameState.lastPlayDate !== today) { gameState.streak++; gameState.lastPlayDate = today; if(gameState.streak>=3)checkAndUnlockAchievement('streak_3'); if(gameState.streak>=7)checkAndUnlockAchievement('streak_7'); saveGameState(); }
-            updateStreakDisplay();
-        }
-        function updateStreakDisplay() { document.getElementById('streakCount').textContent = gameState.streak; document.getElementById('streakIcon').classList.toggle('streak-fire', gameState.streak >= 3); }
-        const mascotPhrases = { wave: ['¡Hola! Soy Paco 🎉','¿Listo para aprender?'], happy: ['¡Excelente! 🎉','¡Muy bien! 👏'], sad: ['¡Ánimo! 💪','Sigue intentando'], thinking: ['Hmm... 🤔'], hint: ['¡Una pista!'] };
+
+        // ==================== MASCOT ====================
+        const mascotPhrases = { wave: ['¡Hola!','¿Listo?'], happy: ['¡Excelente!','¡Muy bien!'], sad: ['¡Ánimo!','Sigue así'], thinking: ['Hmm...'] };
         function updateMascot(state, msg = null) {
             const m = document.getElementById('mascot'), s = document.getElementById('mascotSpeech');
             m.className = 'mascot ' + state;
@@ -1261,41 +1215,55 @@
         }
         function mascotSpeak() { updateMascot('wave'); }
 
-        // ==================== THEME, SOUND, CONFETTI ====================
-        function toggleTheme() { playSound('click'); gameState.theme = gameState.theme==='dark'?'light':'dark'; document.body.dataset.theme = gameState.theme; document.getElementById('themeToggle').textContent = gameState.theme==='dark'?'🌙':'☀️'; saveGameState(); }
-        function toggleSound() { gameState.soundEnabled = !gameState.soundEnabled; document.getElementById('soundToggle').textContent = gameState.soundEnabled?'🔊':'🔇'; document.getElementById('soundToggle').classList.toggle('muted', !gameState.soundEnabled); if(gameState.soundEnabled) playSound('click'); saveGameState(); }
-        function createConfetti() {
-            const c = document.getElementById('confettiContainer'), colors = ['#FF6B35','#F7C948','#2ECC71','#9B59B6','#3498DB'];
-            for (let i = 0; i < 50; i++) { const p = document.createElement('div'); p.className = 'confetti'; p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.5}s`; c.appendChild(p); setTimeout(() => p.remove(), 3000); }
+        // ==================== SOLO GAME ====================
+        function startGame() {
+            playSound('click');
+            gameState.playerName = document.getElementById('playerName').value.trim() || 'Jugador';
+            saveGameState();
+            showScreen('mapScreen');
+            generateCountryButtons();
+            updateMascot('wave', '¡Elige un país!');
         }
 
-        // ==================== GAME FLOW ====================
-        function selectDifficulty(level) { playSound('click'); gameState.difficulty = level; document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.toggle('selected', b.dataset.level === level)); }
-        function startGame() { playSound('click'); gameState.playerName = document.getElementById('playerName').value.trim()||'Jugador'; saveGameState(); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('mapScreen').classList.add('active'); generateCountryButtons(); updateMascot('wave','¡Elige un país!'); }
-        function goHome() { playSound('click'); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('welcomeScreen').classList.add('active'); }
-        function filterCategory(cat) { playSound('click'); gameState.selectedCategory = cat; document.querySelectorAll('.category-btn').forEach(b => b.classList.toggle('selected', b.dataset.category === cat)); }
-        function updateStats() { document.getElementById('totalScore').textContent = gameState.totalScore; document.getElementById('totalStars').textContent = gameState.totalStars; document.getElementById('streakCount').textContent = gameState.streak; }
+        function filterCategory(cat) {
+            playSound('click');
+            gameState.selectedCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.toggle('selected', b.dataset.category === cat));
+        }
+
         function generateCountryButtons() {
             const m = document.getElementById('worldMap'); m.innerHTML = '';
             countries.forEach(c => {
-                const b = document.createElement('button'); b.className = `country-btn ${c.class}`; b.id = `country-${c.id}`;
-                const d = gameState.completedCountries[c.id]; if(d){b.classList.add('completed'); if(d.stars===3)b.classList.add('perfect');}
-                b.innerHTML = `<div class="country-content"><span class="country-flag">${c.flag}</span><span class="country-name">${c.name}</span><span class="country-stars">${d?'⭐'.repeat(d.stars):''}</span></div>`;
-                b.onclick = () => startQuiz(c); m.appendChild(b);
+                const b = document.createElement('button'); b.className = `country-btn ${c.class}`;
+                const d = gameState.completedCountries[c.id];
+                if (d) { b.classList.add('completed'); if (d.stars === 3) b.classList.add('perfect'); }
+                b.innerHTML = `<div class="country-content"><span class="country-flag">${c.flag}</span><span class="country-name">${c.name}</span><span class="country-stars">${d ? '⭐'.repeat(d.stars) : ''}</span></div>`;
+                b.onclick = () => startQuiz(c);
+                m.appendChild(b);
             });
         }
 
-        // ==================== QUIZ ====================
         function shuffleArray(a) { const s=[...a]; for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];} return s; }
-        function getRandomQuestions(n=5) {
-            let pool = questionBank[gameState.difficulty] || questionBank.A2;
-            if (gameState.selectedCategory !== 'all') pool = pool.filter(q => q.category === gameState.selectedCategory);
-            return shuffleArray(pool).slice(0,n).map(q => { const corr=q.answers[q.correct], shuf=shuffleArray([...q.answers]); return {...q, answers:shuf, correct:shuf.indexOf(corr)}; });
+
+        function getRandomQuestions(difficulty, category, count = 5) {
+            let pool = questionBank[difficulty] || questionBank.A2;
+            if (category && category !== 'all') pool = pool.filter(q => q.category === category);
+            return shuffleArray(pool).slice(0, count).map(q => {
+                const corr = q.answers[q.correct], shuf = shuffleArray([...q.answers]);
+                return { ...q, answers: shuf, correct: shuf.indexOf(corr) };
+            });
         }
+
         function startQuiz(country) {
-            playSound('click'); gameState.currentCountry = country; gameState.currentQuestions = getRandomQuestions(5);
-            gameState.currentQuestionIndex = 0; gameState.correctAnswers = 0; gameState.wrongAnswers = [];
-            gameState.hintsRemaining = 2; gameState.hintsUsedThisQuiz = false; gameState.currentQuizScore = 0;
+            playSound('click');
+            gameState.currentCountry = country;
+            gameState.currentQuestions = getRandomQuestions(gameState.difficulty, gameState.selectedCategory, 5);
+            gameState.currentQuestionIndex = 0;
+            gameState.correctAnswers = 0;
+            gameState.wrongAnswers = [];
+            gameState.currentQuizScore = 0;
+            gameState.hintsRemaining = 2;
+
             document.getElementById('countryFlag').textContent = country.flag;
             document.getElementById('countryName').textContent = country.name;
             document.getElementById('countryCapital').textContent = `Capital: ${country.capital}`;
@@ -1304,264 +1272,723 @@
             document.getElementById('quizContent').style.display = 'block';
             document.getElementById('resultsContent').style.display = 'none';
             document.getElementById('explanationBox').classList.remove('show');
-            document.getElementById('hintsRemaining').textContent = '2 restantes';
+            document.getElementById('hintsRemaining').textContent = '2';
             document.getElementById('hintBtn').disabled = false;
             document.getElementById('quizModal').classList.add('active');
-            updateMascot('thinking','¡Vamos!'); loadQuestion();
+            
+            updateMascot('thinking', '¡Vamos!');
+            loadQuestion();
         }
+
         function loadQuestion() {
             const q = gameState.currentQuestions[gameState.currentQuestionIndex];
-            document.getElementById('progressFill').style.width = (gameState.currentQuestionIndex/gameState.currentQuestions.length)*100+'%';
-            document.getElementById('questionCounter').textContent = `Pregunta ${gameState.currentQuestionIndex+1} de ${gameState.currentQuestions.length}`;
-            document.getElementById('questionCategory').textContent = {gramatica:'Gramática',vocabulario:'Vocabulario',cultura:'Cultura'}[q.category]||q.category;
+            document.getElementById('progressFill').style.width = (gameState.currentQuestionIndex / gameState.currentQuestions.length) * 100 + '%';
+            document.getElementById('questionCounter').textContent = `Pregunta ${gameState.currentQuestionIndex + 1} de ${gameState.currentQuestions.length}`;
+            document.getElementById('questionCategory').textContent = { gramatica: 'Gramática', vocabulario: 'Vocabulario', cultura: 'Cultura' }[q.category] || q.category;
             document.getElementById('questionText').textContent = q.question;
+            
             const g = document.getElementById('answersGrid'); g.innerHTML = '';
-            q.answers.forEach((a,i) => { const b=document.createElement('button'); b.className='answer-btn'; b.textContent=a; b.onclick=()=>selectAnswer(i); g.appendChild(b); });
+            q.answers.forEach((a, i) => {
+                const b = document.createElement('button'); b.className = 'answer-btn'; b.textContent = a;
+                b.onclick = () => selectAnswer(i); g.appendChild(b);
+            });
+            
             document.getElementById('explanationBox').classList.remove('show');
             document.getElementById('scoreDisplay').textContent = gameState.currentQuizScore;
-            gameState.answerStartTime = Date.now(); startTimer();
+            gameState.answerStartTime = Date.now();
+            startTimer();
         }
+
         function startTimer() {
-            gameState.timer = 30; updateTimerDisplay();
+            gameState.timer = 30;
+            document.getElementById('timerDisplay').textContent = gameState.timer;
+            document.getElementById('timerDisplay').classList.remove('timer-warning');
             if (gameState.timerInterval) clearInterval(gameState.timerInterval);
-            gameState.timerInterval = setInterval(() => { gameState.timer--; updateTimerDisplay(); if(gameState.timer<=5)playSound('tick'); if(gameState.timer<=0){clearInterval(gameState.timerInterval);timeUp();} }, 1000);
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer--;
+                document.getElementById('timerDisplay').textContent = gameState.timer;
+                if (gameState.timer <= 10) document.getElementById('timerDisplay').classList.add('timer-warning');
+                if (gameState.timer <= 5) playSound('tick');
+                if (gameState.timer <= 0) { clearInterval(gameState.timerInterval); timeUp(); }
+            }, 1000);
         }
-        function updateTimerDisplay() { const t=document.getElementById('timerDisplay'); t.textContent=gameState.timer; t.classList.toggle('timer-warning',gameState.timer<=10); }
+
         function timeUp() {
             const q = gameState.currentQuestions[gameState.currentQuestionIndex];
-            document.querySelectorAll('.answer-btn').forEach((b,i) => { b.disabled=true; if(i===q.correct)b.classList.add('correct'); });
-            gameState.wrongAnswers.push({ question:q.question, yourAnswer:'Sin respuesta', correctAnswer:q.answers[q.correct], explanation:q.explanation });
-            playSound('wrong'); updateMascot('sad'); showExplanation(q.explanation); setTimeout(nextQuestion, 3000);
+            document.querySelectorAll('.answer-btn').forEach((b, i) => { b.disabled = true; if (i === q.correct) b.classList.add('correct'); });
+            gameState.wrongAnswers.push({ question: q.question, yourAnswer: 'Sin respuesta', correctAnswer: q.answers[q.correct], explanation: q.explanation });
+            playSound('wrong'); updateMascot('sad');
+            document.getElementById('explanationText').textContent = q.explanation;
+            document.getElementById('explanationBox').classList.add('show');
+            setTimeout(nextQuestion, 3000);
         }
+
         function selectAnswer(idx) {
             clearInterval(gameState.timerInterval);
-            const q = gameState.currentQuestions[gameState.currentQuestionIndex], btns = document.querySelectorAll('.answer-btn'), answerTime = (Date.now()-gameState.answerStartTime)/1000;
-            btns.forEach((b,i) => { b.disabled=true; if(i===q.correct)b.classList.add('correct'); });
+            const q = gameState.currentQuestions[gameState.currentQuestionIndex];
+            const btns = document.querySelectorAll('.answer-btn');
+            const answerTime = (Date.now() - gameState.answerStartTime) / 1000;
+            
+            btns.forEach((b, i) => { b.disabled = true; if (i === q.correct) b.classList.add('correct'); });
+            
             if (idx === q.correct) {
-                gameState.correctAnswers++; gameState.categoryStats[q.category]++;
+                gameState.correctAnswers++;
+                gameState.categoryStats[q.category]++;
                 gameState.currentQuizScore += 100 + Math.floor(gameState.timer * 2);
-                btns[idx].classList.add('correct'); playSound('correct'); updateMascot('happy');
-                if (answerTime < 5) checkAndUnlockAchievement('speed_demon');
-                if (gameState.categoryStats.gramatica >= 20) checkAndUnlockAchievement('grammar_master');
-                if (gameState.categoryStats.cultura >= 10) checkAndUnlockAchievement('culture_expert');
-                if (gameState.categoryStats.vocabulario >= 20) checkAndUnlockAchievement('vocabulary_king');
+                btns[idx].classList.add('correct');
+                playSound('correct'); updateMascot('happy');
+                if (answerTime < 5) checkAchievement('speed');
             } else {
-                btns[idx].classList.add('incorrect'); playSound('wrong'); updateMascot('sad');
-                gameState.wrongAnswers.push({ question:q.question, yourAnswer:q.answers[idx], correctAnswer:q.answers[q.correct], explanation:q.explanation });
+                btns[idx].classList.add('incorrect');
+                playSound('wrong'); updateMascot('sad');
+                gameState.wrongAnswers.push({ question: q.question, yourAnswer: q.answers[idx], correctAnswer: q.answers[q.correct], explanation: q.explanation });
             }
-            showExplanation(q.explanation); document.getElementById('scoreDisplay').textContent = gameState.currentQuizScore; setTimeout(nextQuestion, 3000);
+            
+            document.getElementById('explanationText').textContent = q.explanation;
+            document.getElementById('explanationBox').classList.add('show');
+            document.getElementById('scoreDisplay').textContent = gameState.currentQuizScore;
+            setTimeout(nextQuestion, 3000);
         }
-        function showExplanation(text) { document.getElementById('explanationText').textContent = text; document.getElementById('explanationBox').classList.add('show'); }
+
         function useHint() {
             if (gameState.hintsRemaining <= 0) return;
-            playSound('click'); gameState.hintsRemaining--; gameState.hintsUsedThisQuiz = true;
-            document.getElementById('hintsRemaining').textContent = `${gameState.hintsRemaining} restantes`;
+            playSound('click');
+            gameState.hintsRemaining--;
+            document.getElementById('hintsRemaining').textContent = gameState.hintsRemaining;
             if (gameState.hintsRemaining <= 0) document.getElementById('hintBtn').disabled = true;
-            const q = gameState.currentQuestions[gameState.currentQuestionIndex], btns = document.querySelectorAll('.answer-btn');
-            const wrong = []; q.answers.forEach((_,i) => { if(i!==q.correct) wrong.push(i); });
-            shuffleArray(wrong).slice(0,2).forEach(i => btns[i].classList.add('eliminated'));
-            updateMascot('hint');
+            
+            const q = gameState.currentQuestions[gameState.currentQuestionIndex];
+            const btns = document.querySelectorAll('.answer-btn');
+            const wrong = []; q.answers.forEach((_, i) => { if (i !== q.correct) wrong.push(i); });
+            shuffleArray(wrong).slice(0, 2).forEach(i => btns[i].classList.add('eliminated'));
         }
-        function nextQuestion() { gameState.currentQuestionIndex++; gameState.currentQuestionIndex < gameState.currentQuestions.length ? loadQuestion() : showResults(); }
+
+        function nextQuestion() {
+            gameState.currentQuestionIndex++;
+            if (gameState.currentQuestionIndex < gameState.currentQuestions.length) loadQuestion();
+            else showResults();
+        }
+
         function showResults() {
-            document.getElementById('quizContent').style.display = 'none'; document.getElementById('resultsContent').style.display = 'block';
-            const score = gameState.correctAnswers, total = gameState.currentQuestions.length, pct = (score/total)*100;
-            let stars = 0; if(pct>=60)stars=1; if(pct>=80)stars=2; if(pct>=100)stars=3;
-            const [icon,title] = pct>=80?['🎉','¡Excelente!']:pct>=60?['😊','¡Muy bien!']:pct>=40?['💪','¡Sigue practicando!']:['📚','¡No te rindas!'];
-            if(pct>=80) createConfetti();
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsContent').style.display = 'block';
+            
+            const score = gameState.correctAnswers, total = gameState.currentQuestions.length;
+            const pct = (score / total) * 100;
+            let stars = pct >= 100 ? 3 : pct >= 80 ? 2 : pct >= 60 ? 1 : 0;
+            
+            const [icon, title] = pct >= 80 ? ['🎉', '¡Excelente!'] : pct >= 60 ? ['😊', '¡Muy bien!'] : pct >= 40 ? ['💪', '¡Sigue así!'] : ['📚', '¡Practica más!'];
+            if (pct >= 80) createConfetti();
+            
             document.getElementById('resultsIcon').textContent = icon;
             document.getElementById('resultsTitle').textContent = title;
-            document.getElementById('resultsScore').innerHTML = `Has acertado <span>${score}</span> de <span>${total}</span><br><small style="opacity:0.7">${gameState.currentQuizScore} puntos</small>`;
+            document.getElementById('resultsScore').innerHTML = `<span>${score}</span> de <span>${total}</span> correctas<br><small>${gameState.currentQuizScore} puntos</small>`;
+            
             const starsC = document.getElementById('starsEarned'); starsC.innerHTML = '';
-            for(let i=0;i<3;i++){ const sp=document.createElement('span'); sp.className='star-icon'+(i<stars?' earned':''); sp.textContent='⭐'; if(i<stars)sp.style.animationDelay=(i*0.2)+'s'; starsC.appendChild(sp); }
-            if(pct>=60){
-                const cid=gameState.currentCountry.id, existing=gameState.completedCountries[cid];
-                if(!existing||stars>existing.stars){
-                    gameState.completedCountries[cid]={stars,score:gameState.currentQuizScore};
-                    gameState.totalStars += existing ? stars-existing.stars : stars;
-                    gameState.totalScore += existing ? gameState.currentQuizScore-existing.score : gameState.currentQuizScore;
-                    checkAndUnlockAchievement('first_quest'); if(pct===100)checkAndUnlockAchievement('perfect_score'); if(!gameState.hintsUsedThisQuiz)checkAndUnlockAchievement('no_hints');
-                    const cc=Object.keys(gameState.completedCountries).length; if(cc>=5)checkAndUnlockAchievement('explorer'); if(cc>=10)checkAndUnlockAchievement('world_traveler'); if(gameState.totalStars>=30)checkAndUnlockAchievement('star_collector');
-                    updateStats(); updateStreak(); saveGameState(); generateCountryButtons();
+            for (let i = 0; i < 3; i++) {
+                const sp = document.createElement('span');
+                sp.className = 'star-icon' + (i < stars ? ' earned' : '');
+                sp.textContent = '⭐';
+                starsC.appendChild(sp);
+            }
+            
+            if (pct >= 60) {
+                const cid = gameState.currentCountry.id;
+                const existing = gameState.completedCountries[cid];
+                if (!existing || stars > existing.stars) {
+                    gameState.completedCountries[cid] = { stars, score: gameState.currentQuizScore };
+                    gameState.totalStars += existing ? stars - existing.stars : stars;
+                    gameState.totalScore += existing ? gameState.currentQuizScore - existing.score : gameState.currentQuizScore;
+                    checkAchievement('first');
+                    if (pct === 100) checkAchievement('perfect');
+                    if (Object.keys(gameState.completedCountries).length >= 5) checkAchievement('explorer');
+                    if (Object.keys(gameState.completedCountries).length >= 10) checkAchievement('traveler');
+                    updateStats(); saveGameState(); generateCountryButtons();
                 }
             }
-            const rev=document.getElementById('reviewSection'), revList=document.getElementById('reviewList');
-            if(gameState.wrongAnswers.length>0){ rev.style.display='block'; revList.innerHTML=gameState.wrongAnswers.map(w=>`<div class="review-item"><div class="review-question">${w.question}</div><div class="review-answer">Tu: <span class="wrong">${w.yourAnswer}</span> | Correcta: <span class="correct">${w.correctAnswer}</span></div><div class="review-explanation">💡 ${w.explanation}</div></div>`).join(''); }
-            else rev.style.display='none';
-            document.getElementById('achievementUnlocked').classList.remove('show'); updateMascot(pct>=60?'happy':'sad');
-            if(gameState.isStudent) updateStudentScore();
+            
+            const rev = document.getElementById('reviewSection'), revList = document.getElementById('reviewList');
+            if (gameState.wrongAnswers.length > 0) {
+                rev.style.display = 'block';
+                revList.innerHTML = gameState.wrongAnswers.map(w => `<div class="review-item"><div class="review-question">${w.question}</div><div class="review-answer"><span class="wrong">${w.yourAnswer}</span> → <span class="correct">${w.correctAnswer}</span></div><div class="review-explanation">💡 ${w.explanation}</div></div>`).join('');
+            } else rev.style.display = 'none';
         }
+
         function retryQuiz() { playSound('click'); startQuiz(gameState.currentCountry); }
         function closeQuiz() { playSound('click'); clearInterval(gameState.timerInterval); document.getElementById('quizModal').classList.remove('active'); }
 
+        // ==================== ACHIEVEMENTS & LEADERBOARD ====================
+        function checkAchievement(id) {
+            const a = gameState.achievements.find(x => x.id === id);
+            if (a && !a.unlocked) { a.unlocked = true; saveGameState(); }
+        }
+
+        function showAchievements() {
+            playSound('click');
+            const unlocked = gameState.achievements.filter(a => a.unlocked).length;
+            document.getElementById('achievementProgress').textContent = `${unlocked} de ${gameState.achievements.length}`;
+            document.getElementById('achievementsGrid').innerHTML = gameState.achievements.map(a => `<div class="achievement-card ${a.unlocked ? 'unlocked' : 'locked'}"><div class="achievement-card-icon">${a.icon}</div><div class="achievement-card-name">${a.name}</div><div class="achievement-card-desc">${a.desc}</div></div>`).join('');
+            document.getElementById('achievementsModal').classList.add('active');
+        }
+        function closeAchievements() { document.getElementById('achievementsModal').classList.remove('active'); }
+
+        function showLeaderboard() {
+            playSound('click');
+            const lb = JSON.parse(localStorage.getItem('spanishQuestLeaderboard') || '[]');
+            document.getElementById('leaderboardList').innerHTML = lb.length === 0 ? '<li class="leaderboard-item" style="justify-content:center;opacity:0.6;">¡Sé el primero!</li>' : lb.slice(0, 10).map((p, i) => `<li class="leaderboard-item ${p.name === gameState.playerName ? 'current-player' : ''}"><span class="leaderboard-rank ${['gold', 'silver', 'bronze'][i] || ''}">${i + 1}</span><div class="leaderboard-info"><div class="leaderboard-name">${p.name}</div><div class="leaderboard-stats">⭐${p.stars}</div></div><span class="leaderboard-score">${p.score}</span></li>`).join('');
+            document.getElementById('leaderboardModal').classList.add('active');
+        }
+        function closeLeaderboard() { document.getElementById('leaderboardModal').classList.remove('active'); }
+
         // ==================== FLASHCARDS ====================
-        function showFlashcards() { playSound('click'); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('flashcardScreen').classList.add('active'); gameState.flashcardIndex=0; updateFlashcard(); }
-        function updateFlashcard() { const f=flashcards[gameState.flashcardIndex]; document.getElementById('flashcardFront').textContent=f.front; document.getElementById('flashcardHint').textContent=f.category; document.getElementById('flashcardBack').textContent=f.back; document.getElementById('flashcardProgress').textContent=`${gameState.flashcardIndex+1} / ${flashcards.length}`; document.getElementById('flashcard').classList.remove('flipped'); }
+        function showFlashcards() {
+            playSound('click');
+            showScreen('flashcardScreen');
+            gameState.flashcardIndex = 0;
+            updateFlashcard();
+        }
+
+        function updateFlashcard() {
+            const f = flashcards[gameState.flashcardIndex];
+            document.getElementById('flashcardFront').textContent = f.front;
+            document.getElementById('flashcardHint').textContent = f.category;
+            document.getElementById('flashcardBack').textContent = f.back;
+            document.getElementById('flashcardProgress').textContent = `${gameState.flashcardIndex + 1} / ${flashcards.length}`;
+            document.getElementById('flashcard').classList.remove('flipped');
+        }
+
         function flipFlashcard() { playSound('click'); document.getElementById('flashcard').classList.toggle('flipped'); }
-        function nextFlashcard() { playSound('click'); gameState.flashcardIndex=(gameState.flashcardIndex+1)%flashcards.length; updateFlashcard(); }
-        function prevFlashcard() { playSound('click'); gameState.flashcardIndex=(gameState.flashcardIndex-1+flashcards.length)%flashcards.length; updateFlashcard(); }
+        function nextFlashcard() { playSound('click'); gameState.flashcardIndex = (gameState.flashcardIndex + 1) % flashcards.length; updateFlashcard(); }
+        function prevFlashcard() { playSound('click'); gameState.flashcardIndex = (gameState.flashcardIndex - 1 + flashcards.length) % flashcards.length; updateFlashcard(); }
 
-        // ==================== CHALLENGE MODE ====================
-        function generateChallenge() {
-            playSound('click');
-            const code = Math.random().toString(36).substring(2,8).toUpperCase();
-            localStorage.setItem(`challenge_${code}`, JSON.stringify({ code, creator:gameState.playerName, difficulty:gameState.difficulty, created:Date.now() }));
-            document.getElementById('challengeContent').innerHTML = `<h2 style="color:var(--light);margin-bottom:12px;">🎯 Tu Código de Desafío</h2><p style="color:rgba(255,255,255,0.7);">Comparte este código con tus amigos:</p><div class="challenge-code">${code}</div><p style="color:rgba(255,255,255,0.6);font-size:0.85rem;">Ellos jugarán con tu nivel (${gameState.difficulty}) y podrán comparar puntuaciones en el Ranking.</p><button class="btn btn-primary" style="margin-top:15px;" onclick="closeChallengeModal()">Entendido</button>`;
-            document.getElementById('challengeModal').classList.add('active');
-        }
-        function joinChallenge() {
-            playSound('click');
-            document.getElementById('challengeContent').innerHTML = `<h2 style="color:var(--light);margin-bottom:12px;">🤝 Unirse a Desafío</h2><p style="color:rgba(255,255,255,0.7);margin-bottom:15px;">Introduce el código de tu amigo:</p><input type="text" class="challenge-code-input" id="challengeCodeInput" maxlength="6" placeholder="CÓDIGO"><div style="margin-top:15px;"><button class="btn btn-primary" onclick="submitChallengeCode()">Unirse</button> <button class="btn btn-secondary" onclick="closeChallengeModal()">Cancelar</button></div><p id="challengeError" style="color:var(--danger);margin-top:12px;display:none;">Código no encontrado</p>`;
-            document.getElementById('challengeModal').classList.add('active');
-        }
-        function submitChallengeCode() {
-            const code=document.getElementById('challengeCodeInput').value.toUpperCase(), data=localStorage.getItem(`challenge_${code}`);
-            if(data){ const d=JSON.parse(data); gameState.difficulty=d.difficulty; document.querySelectorAll('.difficulty-btn').forEach(b=>b.classList.toggle('selected',b.dataset.level===d.difficulty)); closeChallengeModal(); startGame(); updateMascot('wave',`¡Desafío de ${d.creator}!`); }
-            else document.getElementById('challengeError').style.display='block';
-        }
-        function closeChallengeModal() { document.getElementById('challengeModal').classList.remove('active'); }
-
-        // ==================== TEACHER/CLASS MODE ====================
-        function startTeacherMode() {
-            playSound('click');
-            const teacherName = document.getElementById('playerName').value.trim() || 'Profesor';
-            gameState.playerName = teacherName;
-            gameState.isTeacher = true;
-            gameState.classroomPin = Math.floor(1000 + Math.random() * 9000).toString();
-            gameState.classroomStudents = [];
-            
-            // Save classroom data
-            localStorage.setItem(`classroom_${gameState.classroomPin}`, JSON.stringify({
-                pin: gameState.classroomPin,
-                teacher: teacherName,
-                difficulty: gameState.difficulty,
-                students: [],
-                started: false,
-                created: Date.now()
-            }));
-            
-            document.getElementById('classroomPin').textContent = gameState.classroomPin;
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('teacherScreen').classList.add('active');
-            
-            // Start polling for students
-            startTeacherPolling();
-            updateMascot('wave', '¡Modo Profesor activado!');
-        }
+        // ==================== 🔥 FIREBASE CLASSROOM MODE ====================
         
-        function startTeacherPolling() {
-            gameState.teacherPollInterval = setInterval(() => {
-                const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
-                if (classData.students) {
-                    gameState.classroomStudents = classData.students;
-                    updateStudentsList();
+        // Teacher Functions
+        function showTeacherSetup() {
+            playSound('click');
+            document.getElementById('teacherName').value = gameState.playerName || '';
+            showScreen('teacherSetupScreen');
+        }
+
+        function createClassroom() {
+            playSound('click');
+            
+            if (!firebaseInitialized) {
+                alert('Firebase no está configurado. Por favor, añade tu configuración de Firebase.');
+                return;
+            }
+            
+            const teacherName = document.getElementById('teacherName').value.trim() || 'Profesor';
+            const difficulty = document.getElementById('teacherDifficulty').value;
+            const countryId = document.getElementById('teacherCountry').value;
+            const questionCount = parseInt(document.getElementById('teacherQuestionCount').value);
+            
+            // Generate PIN
+            const pin = Math.floor(1000 + Math.random() * 9000).toString();
+            
+            // Get questions
+            const questions = getRandomQuestions(difficulty, 'all', questionCount);
+            
+            // Get country info
+            let country = countryId === 'random' ? countries[Math.floor(Math.random() * countries.length)] : countries.find(c => c.id === countryId);
+            
+            gameState.classroomId = pin;
+            gameState.isTeacher = true;
+            gameState.classQuestions = questions;
+            gameState.classQuestionIndex = -1; // Not started
+            
+            // Create classroom in Firebase
+            db.ref(`classrooms/${pin}`).set({
+                teacher: teacherName,
+                difficulty: difficulty,
+                country: country,
+                questionCount: questionCount,
+                questions: questions,
+                currentQuestion: -1,
+                status: 'waiting', // waiting, playing, finished
+                created: Date.now(),
+                students: {}
+            });
+            
+            // Show lobby
+            document.getElementById('classPin').textContent = pin;
+            showScreen('teacherLobbyScreen');
+            
+            // Generate QR Code
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = '';
+            const gameUrl = window.location.href.split('?')[0] + '?join=' + pin;
+            new QRCode(qrDiv, { text: gameUrl, width: 150, height: 150 });
+            
+            // Listen for students
+            db.ref(`classrooms/${pin}/students`).on('value', (snapshot) => {
+                const students = snapshot.val() || {};
+                updateStudentsList(students);
+            });
+            
+            updateMascot('wave', '¡Clase creada!');
+        }
+
+        function updateStudentsList(students) {
+            const grid = document.getElementById('studentsGrid');
+            const studentArr = Object.entries(students);
+            document.getElementById('studentCount').textContent = studentArr.length;
+            document.getElementById('startClassBtn').disabled = studentArr.length === 0;
+            
+            if (studentArr.length === 0) {
+                grid.innerHTML = '<div class="no-students">Esperando estudiantes...</div>';
+            } else {
+                grid.innerHTML = studentArr.map(([id, s]) => `
+                    <div class="student-card">
+                        <span class="student-name">${s.name}</span>
+                        <span class="student-status ${s.status}">${s.status === 'waiting' ? '⏳' : s.status === 'playing' ? '🎮' : '✅'}</span>
+                        <span class="student-score">${s.score || 0}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function startClassQuiz() {
+            playSound('click');
+            gameState.classQuestionIndex = 0;
+            
+            // Update Firebase
+            db.ref(`classrooms/${gameState.classroomId}`).update({
+                status: 'playing',
+                currentQuestion: 0,
+                questionStartTime: Date.now()
+            });
+            
+            showScreen('teacherQuizScreen');
+            showLiveQuestion();
+            
+            // Listen for answers
+            db.ref(`classrooms/${gameState.classroomId}/students`).on('value', (snapshot) => {
+                if (gameState.isTeacher) updateResponsesDisplay(snapshot.val() || {});
+            });
+        }
+
+        function showLiveQuestion() {
+            const q = gameState.classQuestions[gameState.classQuestionIndex];
+            const total = gameState.classQuestions.length;
+            
+            document.getElementById('liveQuestionNumber').textContent = `Pregunta ${gameState.classQuestionIndex + 1} de ${total}`;
+            document.getElementById('liveQuestionText').textContent = q.question;
+            document.getElementById('liveAnswerA').textContent = q.answers[0];
+            document.getElementById('liveAnswerB').textContent = q.answers[1];
+            document.getElementById('liveAnswerC').textContent = q.answers[2];
+            document.getElementById('liveAnswerD').textContent = q.answers[3];
+            
+            // Reset answer highlights
+            document.querySelectorAll('.live-answer').forEach(a => a.classList.remove('correct'));
+            
+            // Hide buttons
+            document.getElementById('showResultsBtn').style.display = 'none';
+            document.getElementById('nextQuestionBtn').style.display = 'none';
+            document.getElementById('showFinalBtn').style.display = 'none';
+            
+            // Start timer
+            startLiveTimer();
+        }
+
+        function startLiveTimer() {
+            let time = 30;
+            const timerEl = document.getElementById('liveTimer');
+            timerEl.textContent = time;
+            timerEl.classList.remove('warning');
+            
+            if (gameState.liveTimer) clearInterval(gameState.liveTimer);
+            
+            gameState.liveTimer = setInterval(() => {
+                time--;
+                timerEl.textContent = time;
+                if (time <= 10) timerEl.classList.add('warning');
+                if (time <= 0) {
+                    clearInterval(gameState.liveTimer);
+                    document.getElementById('showResultsBtn').style.display = 'inline-flex';
                 }
             }, 1000);
         }
-        
-        function updateStudentsList() {
-            const container = document.getElementById('studentsContainer');
-            document.getElementById('studentCount').textContent = gameState.classroomStudents.length;
-            document.getElementById('startClassBtn').disabled = gameState.classroomStudents.length === 0;
+
+        function updateResponsesDisplay(students) {
+            const studentArr = Object.values(students);
+            const total = studentArr.length;
+            const currentQ = gameState.classQuestionIndex;
             
-            container.innerHTML = gameState.classroomStudents.map(s => `
-                <div class="teacher-student-item">
-                    <span class="teacher-student-name">${s.name}</span>
-                    <span class="teacher-student-status ${s.status}">${s.status === 'waiting' ? '⏳ Esperando' : s.status === 'playing' ? '🎮 Jugando' : '✅ Terminado'}</span>
-                    <span class="teacher-student-score">${s.score || 0} pts</span>
-                </div>
-            `).join('') || '<p style="color:rgba(255,255,255,0.5);text-align:center;">Esperando estudiantes...</p>';
+            let responses = [0, 0, 0, 0];
+            let answered = 0;
+            
+            studentArr.forEach(s => {
+                if (s.answers && s.answers[currentQ] !== undefined) {
+                    answered++;
+                    responses[s.answers[currentQ]]++;
+                }
+            });
+            
+            document.getElementById('responseCount').textContent = answered;
+            document.getElementById('totalStudents').textContent = total;
+            
+            // Update bar
+            const bar = document.getElementById('responsesBar');
+            if (answered > 0) {
+                const colors = ['#E74C3C', '#3498DB', '#F7C948', '#2ECC71'];
+                bar.innerHTML = responses.map((r, i) => r > 0 ? `<div class="response-segment" style="width:${(r/answered)*100}%;background:${colors[i]}">${r}</div>` : '').join('');
+            } else {
+                bar.innerHTML = '';
+            }
+            
+            // Auto-show results if all answered
+            if (answered === total && total > 0) {
+                clearInterval(gameState.liveTimer);
+                document.getElementById('showResultsBtn').style.display = 'inline-flex';
+            }
         }
-        
-        function startClassGame() {
+
+        function showQuestionResults() {
             playSound('click');
-            const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
-            classData.started = true;
-            classData.startTime = Date.now();
-            localStorage.setItem(`classroom_${gameState.classroomPin}`, JSON.stringify(classData));
-            updateMascot('happy', '¡Juego iniciado!');
+            document.getElementById('showResultsBtn').style.display = 'none';
+            
+            const q = gameState.classQuestions[gameState.classQuestionIndex];
+            const correctIdx = q.correct;
+            
+            // Highlight correct answer
+            const letters = ['a', 'b', 'c', 'd'];
+            document.getElementById(`liveAnswer${letters[correctIdx].toUpperCase()}`).classList.add('correct');
+            
+            // Show next button
+            if (gameState.classQuestionIndex < gameState.classQuestions.length - 1) {
+                document.getElementById('nextQuestionBtn').style.display = 'inline-flex';
+            } else {
+                document.getElementById('showFinalBtn').style.display = 'inline-flex';
+            }
+            
+            // Update Firebase with results
+            db.ref(`classrooms/${gameState.classroomId}`).update({
+                showingResults: gameState.classQuestionIndex
+            });
         }
-        
-        function endTeacherMode() {
+
+        function nextLiveQuestion() {
             playSound('click');
-            clearInterval(gameState.teacherPollInterval);
-            localStorage.removeItem(`classroom_${gameState.classroomPin}`);
+            gameState.classQuestionIndex++;
+            
+            db.ref(`classrooms/${gameState.classroomId}`).update({
+                currentQuestion: gameState.classQuestionIndex,
+                questionStartTime: Date.now(),
+                showingResults: -1
+            });
+            
+            showLiveQuestion();
+        }
+
+        function showFinalLeaderboard() {
+            playSound('click');
+            clearInterval(gameState.liveTimer);
+            
+            db.ref(`classrooms/${gameState.classroomId}`).update({ status: 'finished' });
+            
+            // Get final scores
+            db.ref(`classrooms/${gameState.classroomId}/students`).once('value', (snapshot) => {
+                const students = snapshot.val() || {};
+                const sorted = Object.entries(students)
+                    .map(([id, s]) => ({ name: s.name, score: s.score || 0 }))
+                    .sort((a, b) => b.score - a.score);
+                
+                // Show podium
+                const podium = document.getElementById('podium');
+                const podiumHTML = [];
+                if (sorted[1]) podiumHTML.push(`<div class="podium-place second"><div class="podium-name">${sorted[1].name}</div><div class="podium-block">2</div><div class="podium-score">${sorted[1].score}</div></div>`);
+                if (sorted[0]) podiumHTML.push(`<div class="podium-place first"><div class="podium-name">${sorted[0].name}</div><div class="podium-block">1</div><div class="podium-score">${sorted[0].score}</div></div>`);
+                if (sorted[2]) podiumHTML.push(`<div class="podium-place third"><div class="podium-name">${sorted[2].name}</div><div class="podium-block">3</div><div class="podium-score">${sorted[2].score}</div></div>`);
+                podium.innerHTML = podiumHTML.join('');
+                
+                // Show full list
+                document.getElementById('finalLeaderboard').innerHTML = sorted.slice(3).map((s, i) => `<div class="student-card"><span>${i + 4}.</span><span class="student-name">${s.name}</span><span class="student-score">${s.score}</span></div>`).join('');
+                
+                showScreen('teacherFinalScreen');
+                createConfetti();
+            });
+        }
+
+        function restartClass() {
+            playSound('click');
+            // Reset questions
+            gameState.classQuestions = getRandomQuestions(
+                document.getElementById('teacherDifficulty').value,
+                'all',
+                parseInt(document.getElementById('teacherQuestionCount').value)
+            );
+            gameState.classQuestionIndex = -1;
+            
+            // Reset students
+            db.ref(`classrooms/${gameState.classroomId}/students`).once('value', (snapshot) => {
+                const students = snapshot.val() || {};
+                Object.keys(students).forEach(id => {
+                    db.ref(`classrooms/${gameState.classroomId}/students/${id}`).update({
+                        score: 0,
+                        answers: {},
+                        status: 'waiting'
+                    });
+                });
+            });
+            
+            // Update classroom
+            db.ref(`classrooms/${gameState.classroomId}`).update({
+                questions: gameState.classQuestions,
+                currentQuestion: -1,
+                status: 'waiting',
+                showingResults: -1
+            });
+            
+            showScreen('teacherLobbyScreen');
+        }
+
+        function endClassroom() {
+            playSound('click');
+            if (gameState.classroomId) {
+                db.ref(`classrooms/${gameState.classroomId}`).remove();
+                db.ref(`classrooms/${gameState.classroomId}/students`).off();
+            }
+            clearInterval(gameState.liveTimer);
             gameState.isTeacher = false;
-            gameState.classroomPin = null;
+            gameState.classroomId = null;
             goHome();
         }
-        
-        function joinClassroom() {
+
+        // Student Functions
+        function showJoinClass() {
             playSound('click');
-            document.getElementById('classroomContent').innerHTML = `
-                <h2 style="color:var(--light);margin-bottom:12px;">🎓 Unirse a una Clase</h2>
-                <p style="color:rgba(255,255,255,0.7);margin-bottom:15px;">Introduce el PIN de la clase:</p>
-                <input type="text" class="challenge-code-input" id="classroomPinInput" maxlength="4" placeholder="PIN">
-                <div style="margin-top:15px;">
-                    <button class="btn btn-primary" onclick="submitClassroomPin()">Unirse</button>
-                    <button class="btn btn-secondary" onclick="closeClassroomModal()">Cancelar</button>
-                </div>
-                <p id="classroomError" style="color:var(--danger);margin-top:12px;display:none;">Clase no encontrada</p>
-            `;
-            document.getElementById('classroomModal').classList.add('active');
-        }
-        
-        function submitClassroomPin() {
-            const pin = document.getElementById('classroomPinInput').value;
-            const classData = JSON.parse(localStorage.getItem(`classroom_${pin}`) || 'null');
+            document.getElementById('studentName').value = gameState.playerName || '';
+            document.getElementById('classCodeInput').value = '';
+            document.getElementById('joinError').style.display = 'none';
+            showScreen('joinClassScreen');
             
-            if (classData) {
-                gameState.isStudent = true;
-                gameState.classroomPin = pin;
-                gameState.teacherName = classData.teacher;
-                gameState.difficulty = classData.difficulty;
-                gameState.playerName = document.getElementById('playerName').value.trim() || 'Estudiante';
-                
-                // Add student to class
-                classData.students = classData.students || [];
-                classData.students.push({ name: gameState.playerName, status: 'waiting', score: 0, joined: Date.now() });
-                localStorage.setItem(`classroom_${pin}`, JSON.stringify(classData));
-                
-                closeClassroomModal();
-                document.getElementById('teacherNameDisplay').textContent = classData.teacher;
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById('waitingRoom').classList.add('active');
-                
-                // Start polling for game start
-                startStudentPolling();
-                updateMascot('wave', `¡Conectado a la clase de ${classData.teacher}!`);
-            } else {
-                document.getElementById('classroomError').style.display = 'block';
+            // Check URL for join code
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('join')) {
+                document.getElementById('classCodeInput').value = params.get('join');
             }
         }
-        
-        function startStudentPolling() {
-            gameState.studentPollInterval = setInterval(() => {
-                const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
-                if (classData.started) {
-                    clearInterval(gameState.studentPollInterval);
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    document.getElementById('mapScreen').classList.add('active');
-                    generateCountryButtons();
-                    updateMascot('happy', '¡El juego ha comenzado!');
+
+        function joinClassroom() {
+            playSound('click');
+            
+            if (!firebaseInitialized) {
+                alert('Firebase no está configurado.');
+                return;
+            }
+            
+            const name = document.getElementById('studentName').value.trim() || 'Estudiante';
+            const pin = document.getElementById('classCodeInput').value.trim();
+            
+            if (!pin || pin.length !== 4) {
+                document.getElementById('joinError').style.display = 'block';
+                document.getElementById('joinError').textContent = 'Introduce un PIN de 4 dígitos.';
+                return;
+            }
+            
+            // Check if classroom exists
+            db.ref(`classrooms/${pin}`).once('value', (snapshot) => {
+                const classroom = snapshot.val();
+                
+                if (!classroom) {
+                    document.getElementById('joinError').style.display = 'block';
+                    document.getElementById('joinError').textContent = 'Clase no encontrada. Verifica el PIN.';
+                    return;
+                }
+                
+                // Join classroom
+                gameState.classroomId = pin;
+                gameState.isStudent = true;
+                gameState.playerName = name;
+                gameState.studentId = db.ref(`classrooms/${pin}/students`).push().key;
+                
+                db.ref(`classrooms/${pin}/students/${gameState.studentId}`).set({
+                    name: name,
+                    score: 0,
+                    answers: {},
+                    status: 'waiting',
+                    joined: Date.now()
+                });
+                
+                // Show waiting room
+                document.getElementById('teacherNameDisplay').textContent = classroom.teacher;
+                document.getElementById('classLevel').textContent = classroom.difficulty;
+                showScreen('studentWaitingScreen');
+                
+                // Listen for game start
+                db.ref(`classrooms/${pin}`).on('value', (snap) => {
+                    const data = snap.val();
+                    if (!data) {
+                        // Classroom was deleted
+                        alert('La clase ha terminado.');
+                        leaveClassroom();
+                        return;
+                    }
+                    
+                    if (data.status === 'playing' && gameState.isStudent) {
+                        gameState.classQuestions = data.questions;
+                        handleStudentQuestionChange(data);
+                    }
+                    
+                    if (data.status === 'finished' && gameState.isStudent) {
+                        showStudentFinalScore();
+                    }
+                });
+                
+                updateMascot('wave', '¡Conectado!');
+            });
+        }
+
+        function handleStudentQuestionChange(data) {
+            const qIdx = data.currentQuestion;
+            
+            if (qIdx < 0) return;
+            
+            // Show quiz screen if not already
+            if (!document.getElementById('studentQuizScreen').classList.contains('active')) {
+                showScreen('studentQuizScreen');
+            }
+            
+            // Check if showing results
+            if (data.showingResults === qIdx) {
+                showStudentFeedback(qIdx);
+                return;
+            }
+            
+            // Check if already answered this question
+            db.ref(`classrooms/${gameState.classroomId}/students/${gameState.studentId}/answers/${qIdx}`).once('value', (snap) => {
+                if (snap.val() !== null) {
+                    // Already answered, show waiting
+                    document.getElementById('studentAnswersGrid').innerHTML = '';
+                    document.getElementById('studentFeedback').style.display = 'none';
+                    document.getElementById('waitingNext').style.display = 'block';
+                    return;
+                }
+                
+                // Show question
+                showStudentQuestion(qIdx, data.questionStartTime);
+            });
+        }
+
+        function showStudentQuestion(qIdx, startTime) {
+            const q = gameState.classQuestions[qIdx];
+            
+            document.getElementById('studentQuestionNumber').textContent = `Pregunta ${qIdx + 1} de ${gameState.classQuestions.length}`;
+            document.getElementById('studentQuestionText').textContent = q.question;
+            document.getElementById('studentFeedback').style.display = 'none';
+            document.getElementById('waitingNext').style.display = 'none';
+            
+            const grid = document.getElementById('studentAnswersGrid');
+            grid.innerHTML = '';
+            q.answers.forEach((a, i) => {
+                const b = document.createElement('button');
+                b.className = 'answer-btn';
+                b.textContent = a;
+                b.onclick = () => submitStudentAnswer(qIdx, i);
+                grid.appendChild(b);
+            });
+            
+            // Calculate remaining time
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            let remaining = Math.max(0, 30 - elapsed);
+            
+            const timerEl = document.getElementById('studentTimer');
+            timerEl.textContent = remaining;
+            timerEl.classList.remove('warning');
+            
+            if (gameState.liveTimer) clearInterval(gameState.liveTimer);
+            gameState.liveTimer = setInterval(() => {
+                remaining--;
+                timerEl.textContent = Math.max(0, remaining);
+                if (remaining <= 10) timerEl.classList.add('warning');
+                if (remaining <= 0) {
+                    clearInterval(gameState.liveTimer);
+                    // Time's up - submit no answer
+                    document.getElementById('studentAnswersGrid').innerHTML = '<p style="color:var(--danger);text-align:center;">¡Tiempo agotado!</p>';
                 }
             }, 1000);
         }
-        
-        function updateStudentScore() {
-            if (!gameState.isStudent || !gameState.classroomPin) return;
-            const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
-            if (classData.students) {
-                const student = classData.students.find(s => s.name === gameState.playerName);
+
+        function submitStudentAnswer(qIdx, answerIdx) {
+            playSound('click');
+            clearInterval(gameState.liveTimer);
+            
+            const q = gameState.classQuestions[qIdx];
+            const isCorrect = answerIdx === q.correct;
+            const points = isCorrect ? 100 : 0;
+            
+            // Save answer to Firebase
+            db.ref(`classrooms/${gameState.classroomId}/students/${gameState.studentId}`).transaction((student) => {
                 if (student) {
-                    student.score = gameState.totalScore;
-                    student.status = 'finished';
-                    localStorage.setItem(`classroom_${gameState.classroomPin}`, JSON.stringify(classData));
+                    student.answers = student.answers || {};
+                    student.answers[qIdx] = answerIdx;
+                    student.score = (student.score || 0) + points;
+                    student.status = 'playing';
                 }
+                return student;
+            });
+            
+            // Show waiting
+            document.getElementById('studentAnswersGrid').innerHTML = '';
+            document.getElementById('waitingNext').style.display = 'block';
+            
+            if (isCorrect) {
+                playSound('correct');
+                updateMascot('happy');
+            } else {
+                playSound('wrong');
+                updateMascot('sad');
             }
         }
-        
-        function closeClassroomModal() { document.getElementById('classroomModal').classList.remove('active'); }
+
+        function showStudentFeedback(qIdx) {
+            clearInterval(gameState.liveTimer);
+            
+            const q = gameState.classQuestions[qIdx];
+            document.getElementById('waitingNext').style.display = 'none';
+            document.getElementById('studentAnswersGrid').innerHTML = '';
+            
+            // Get student's answer
+            db.ref(`classrooms/${gameState.classroomId}/students/${gameState.studentId}/answers/${qIdx}`).once('value', (snap) => {
+                const studentAnswer = snap.val();
+                const isCorrect = studentAnswer === q.correct;
+                
+                document.getElementById('feedbackIcon').textContent = isCorrect ? '✅' : '❌';
+                document.getElementById('feedbackText').textContent = isCorrect ? '¡Correcto!' : `Incorrecto. Era: ${q.answers[q.correct]}`;
+                document.getElementById('feedbackExplanation').textContent = q.explanation;
+                document.getElementById('studentFeedback').style.display = 'block';
+            });
+        }
+
+        function showStudentFinalScore() {
+            clearInterval(gameState.liveTimer);
+            
+            db.ref(`classrooms/${gameState.classroomId}/students/${gameState.studentId}`).once('value', (snap) => {
+                const student = snap.val();
+                const answers = student.answers || {};
+                const correctCount = Object.entries(answers).filter(([idx, ans]) => ans === gameState.classQuestions[idx].correct).length;
+                
+                document.getElementById('studentFinalScore').textContent = student.score || 0;
+                document.getElementById('studentCorrectCount').textContent = correctCount;
+                document.getElementById('studentTotalCount').textContent = gameState.classQuestions.length;
+                
+                showScreen('studentFinalScreen');
+                createConfetti();
+            });
+        }
+
+        function leaveClassroom() {
+            if (gameState.classroomId && gameState.studentId) {
+                db.ref(`classrooms/${gameState.classroomId}/students/${gameState.studentId}`).remove();
+                db.ref(`classrooms/${gameState.classroomId}`).off();
+            }
+            clearInterval(gameState.liveTimer);
+            gameState.isStudent = false;
+            gameState.classroomId = null;
+            gameState.studentId = null;
+            goHome();
+        }
 
         // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', init);
