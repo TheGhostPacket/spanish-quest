@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Quest - Aprende Español Jugando 🌎</title>
+    <meta name="description" content="Juego educativo interactivo para aprender español nivel A1-B1. Explora países hispanohablantes mientras practicas gramática y vocabulario.">
+    <meta name="keywords" content="aprender español, spanish learning game, A1, A2, B1, gramática española, vocabulario español">
+    <meta name="author" content="ShieldStack Technologies">
+    <meta property="og:title" content="Spanish Quest - Aprende Español Jugando">
+    <meta property="og:description" content="Juego educativo interactivo para aprender español. ¡Explora 10 países hispanohablantes!">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --secondary: #004E89;
+            --accent: #F7C948;
+            --success: #2ECC71;
+            --danger: #E74C3C;
+            --dark: #1A1A2E;
+            --darker: #12121f;
+            --light: #FFF8F0;
+            --purple: #9B59B6;
+        }
+        [data-theme="light"] {
+            --dark: #F5F5F5;
+            --darker: #E8E8E8;
+            --light: #1A1A2E;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s;
+        }
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,107,53,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0,78,137,0.12) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .stars { position: fixed; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .star {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        [data-theme="light"] .star { background: var(--secondary); opacity: 0.2; }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.3); }
+        }
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px; height: 10px;
+            top: -10px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26,26,46,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--accent);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        [data-theme="light"] header { background: rgba(255,255,255,0.95); }
+        .logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #FF6B35, #F7C948);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo:hover { transform: scale(1.05); transition: 0.3s; }
+        .header-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .stats-bar { display: flex; gap: 15px; flex-wrap: wrap; }
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--light);
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .stat:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .stat-value { color: var(--accent); font-weight: 800; }
+        .streak-fire { animation: fire-pulse 0.5s infinite alternate; }
+        @keyframes fire-pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
+        .toggle-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .toggle-btn:hover { background: rgba(255,255,255,0.2); }
+        .toggle-btn.muted { opacity: 0.5; }
+        .mascot {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 50;
+            font-size: 3.5rem;
+            cursor: pointer;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+            transition: 0.3s;
+        }
+        .mascot:hover { transform: scale(1.1) rotate(-5deg); }
+        .mascot.happy { animation: mascot-happy 0.5s; }
+        .mascot.sad { animation: mascot-sad 0.5s; }
+        @keyframes mascot-happy {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3) rotate(10deg); }
+        }
+        @keyframes mascot-sad {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(0.9) translateY(10px); }
+        }
+        .mascot-speech {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: var(--dark);
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+        .mascot-speech.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+        .mascot-speech::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 10px solid transparent;
+            border-top-color: white;
+        }
+        .container {
+            position: relative;
+            z-index: 5;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px;
+        }
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .welcome-container {
+            text-align: center;
+            padding: 50px 35px;
+            background: linear-gradient(180deg, rgba(0,78,137,0.2) 0%, rgba(26,26,46,0.8) 100%);
+            border-radius: 25px;
+            border: 3px solid var(--accent);
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .welcome-icon { font-size: 4.5rem; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .welcome-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #FF6B35, #F7C948);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .welcome-desc {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.1rem;
+            max-width: 550px;
+            margin: 0 auto 25px;
+            line-height: 1.7;
+        }
+        [data-theme="light"] .welcome-desc { color: rgba(0,0,0,0.7); }
+        .player-input-section { margin-bottom: 25px; }
+        .player-input-section label {
+            display: block;
+            color: var(--light);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .player-input {
+            padding: 14px 25px;
+            font-size: 1rem;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            background: rgba(255,255,255,0.05);
+            color: var(--light);
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            font-family: 'Nunito', sans-serif;
+            transition: 0.3s;
+        }
+        .player-input:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.1); }
+        .player-input::placeholder { color: rgba(255,255,255,0.4); }
+        .difficulty-section { margin-bottom: 25px; }
+        .difficulty-section h3 { color: var(--light); margin-bottom: 12px; font-size: 1rem; }
+        .difficulty-buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .difficulty-btn {
+            padding: 10px 25px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            background: rgba(255,255,255,0.05);
+            color: var(--light);
+            font-size: 0.95rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .difficulty-btn:hover { border-color: var(--accent); transform: translateY(-3px); }
+        .difficulty-btn.selected {
+            background: linear-gradient(135deg, #FF6B35, #F7C948);
+            border-color: transparent;
+            color: white;
+        }
+        .difficulty-btn .level-badge { display: block; font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+        }
+        [data-theme="light"] .feature-item { color: rgba(0,0,0,0.7); }
+        .feature-item span:first-child { font-size: 1.2rem; }
+        .btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35, #F7C948);
+            color: white;
+            box-shadow: 0 5px 25px rgba(255,107,53,0.4);
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 3px solid var(--accent);
+            color: var(--accent);
+        }
+        .btn-success { background: linear-gradient(135deg, #2ECC71, #27AE60); color: white; }
+        .btn-purple { background: linear-gradient(135deg, #9B59B6, #8E44AD); color: white; }
+        .btn-teacher { background: linear-gradient(135deg, #E74C3C, #C0392B); color: white; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 35px rgba(0,0,0,0.3); }
+        .btn-small { padding: 10px 22px; font-size: 0.9rem; }
+        .map-container {
+            background: linear-gradient(180deg, #0077B6 0%, #004E89 50%, #003566 100%);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .map-title { color: white; font-family: 'Fredoka One', cursive; font-size: 1.8rem; }
+        .map-subtitle { color: rgba(255,255,255,0.8); font-size: 0.95rem; }
+        .category-filter { display: flex; gap: 8px; flex-wrap: wrap; }
+        .category-btn {
+            padding: 6px 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 0.8rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .category-btn:hover { background: rgba(255,255,255,0.2); }
+        .category-btn.selected { background: var(--accent); border-color: var(--accent); color: var(--dark); }
+        .world-map {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .country-btn {
+            position: relative;
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+        }
+        .country-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%);
+            z-index: 1;
+        }
+        .country-btn:hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .country-btn.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 8px; right: 8px;
+            width: 26px; height: 26px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85rem;
+            z-index: 5;
+        }
+        .country-btn.perfect::after { content: '★'; background: var(--accent); }
+        .country-flag { font-size: 2.5rem; display: block; margin-bottom: 4px; }
+        .country-name { font-weight: 700; font-size: 0.85rem; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .country-stars { margin-top: 4px; font-size: 0.75rem; }
+        .country-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 10px;
+        }
+        .country-spain { background: linear-gradient(135deg, #C60B1E, #FFC400); }
+        .country-mexico { background: linear-gradient(135deg, #006341, #CE1126); }
+        .country-argentina { background: linear-gradient(135deg, #74ACDF, #F6B40E); }
+        .country-colombia { background: linear-gradient(135deg, #FCD116, #003893); }
+        .country-peru { background: linear-gradient(135deg, #D91023, #fff); }
+        .country-chile { background: linear-gradient(135deg, #0039A6, #D52B1E); }
+        .country-ecuador { background: linear-gradient(135deg, #FFD100, #0033A0); }
+        .country-venezuela { background: linear-gradient(135deg, #FFCC00, #00247D); }
+        .country-cuba { background: linear-gradient(135deg, #002A8F, #CB1515); }
+        .country-costarica { background: linear-gradient(135deg, #002B7F, #CE1126); }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .quiz-modal {
+            background: var(--dark);
+            border-radius: 22px;
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 80px rgba(247,201,72,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-btn {
+            position: absolute;
+            top: 12px; right: 12px;
+            width: 38px; height: 38px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            color: var(--light);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .close-btn:hover { background: var(--danger); transform: rotate(90deg); }
+        .country-info-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .country-info-flag { font-size: 3.5rem; }
+        .country-info-details h2 {
+            color: var(--light);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+        .country-info-details p { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 2px; }
+        .country-fun-fact {
+            background: rgba(247,201,72,0.1);
+            border-left: 4px solid var(--accent);
+            padding: 10px 12px;
+            margin-top: 8px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.9);
+        }
+        .country-fun-fact strong { color: var(--accent); }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .quiz-stats { display: flex; gap: 12px; }
+        .quiz-stat {
+            text-align: center;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .quiz-stat-value { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--accent); }
+        .quiz-stat-value.timer-warning { color: var(--danger); animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .quiz-stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; }
+        .hints-container { display: flex; align-items: center; gap: 8px; }
+        .hint-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--purple);
+            border-radius: 20px;
+            background: rgba(155,89,182,0.1);
+            color: var(--purple);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+        .hint-btn:hover:not(:disabled) { background: var(--purple); color: white; }
+        .hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .hints-remaining { color: rgba(255,255,255,0.6); font-size: 0.8rem; }
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #FF6B35, #F7C948);
+            border-radius: 8px;
+            transition: width 0.4s;
+        }
+        .question-category {
+            text-align: center;
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .question-counter { text-align: center; color: rgba(255,255,255,0.5); margin-bottom: 6px; font-size: 0.85rem; }
+        .question-text {
+            font-size: 1.3rem;
+            color: var(--light);
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .answer-btn {
+            padding: 16px 18px;
+            border: 3px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            color: var(--light);
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .answer-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(247,201,72,0.1); transform: translateY(-2px); }
+        .answer-btn:disabled { cursor: not-allowed; }
+        .answer-btn.correct { border-color: var(--success); background: rgba(46,204,113,0.25); animation: correct-pulse 0.6s; }
+        .answer-btn.incorrect { border-color: var(--danger); background: rgba(231,76,60,0.25); animation: shake 0.5s; }
+        .answer-btn.eliminated { opacity: 0.3; text-decoration: line-through; pointer-events: none; }
+        @keyframes correct-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+        .explanation-box {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            display: none;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s; }
+        .explanation-title { color: var(--accent); font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .explanation-text { color: rgba(255,255,255,0.9); line-height: 1.6; font-size: 0.9rem; }
+        .results-container { text-align: center; padding: 15px; }
+        .results-icon { font-size: 4.5rem; margin-bottom: 12px; animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        .results-title { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--light); margin-bottom: 8px; }
+        .results-score { font-size: 1.1rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; }
+        .results-score span { color: var(--accent); font-weight: 800; }
+        .stars-earned { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .star-icon { font-size: 2.2rem; color: rgba(255,255,255,0.2); transition: 0.3s; }
+        .star-icon.earned { color: var(--accent); animation: star-pop 0.5s backwards; filter: drop-shadow(0 0 8px rgba(247,201,72,0.5)); }
+        @keyframes star-pop { 0% { transform: scale(0) rotate(-180deg); } 100% { transform: scale(1) rotate(0); } }
+        .achievement-unlocked {
+            background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(142,68,173,0.2));
+            border: 2px solid var(--purple);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .achievement-unlocked.show { display: block; animation: achievement-pop 0.6s; }
+        @keyframes achievement-pop { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+        .achievement-title { color: var(--purple); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+        .achievement-name { color: var(--light); font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .review-section { margin-top: 20px; text-align: left; }
+        .review-title { color: var(--light); font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .review-item {
+            background: rgba(231,76,60,0.1);
+            border: 2px solid rgba(231,76,60,0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .review-question { color: var(--light); font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+        .review-answer { font-size: 0.85rem; }
+        .review-answer .wrong { color: var(--danger); text-decoration: line-through; }
+        .review-answer .correct { color: var(--success); font-weight: 700; }
+        .review-explanation { margin-top: 6px; font-size: 0.8rem; color: rgba(255,255,255,0.7); font-style: italic; }
+        .result-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .leaderboard-modal {
+            background: var(--dark);
+            border-radius: 22px;
+            padding: 30px;
+            max-width: 480px;
+            width: 100%;
+            border: 3px solid var(--accent);
+        }
+        .leaderboard-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            color: var(--light);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .leaderboard-list { list-style: none; }
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+        .leaderboard-item:hover { background: rgba(255,255,255,0.08); }
+        .leaderboard-item.current-player { border: 2px solid var(--accent); background: rgba(247,201,72,0.1); }
+        .leaderboard-rank { font-family: 'Fredoka One', cursive; font-size: 1.3rem; width: 45px; color: var(--accent); }
+        .leaderboard-rank.gold { color: #FFD700; }
+        .leaderboard-rank.silver { color: #C0C0C0; }
+        .leaderboard-rank.bronze { color: #CD7F32; }
+        .leaderboard-info { flex: 1; }
+        .leaderboard-name { color: var(--light); font-weight: 700; }
+        .leaderboard-stats { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+        .leaderboard-score { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--accent); }
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .achievement-card {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .achievement-card.unlocked { border-color: var(--purple); background: rgba(155,89,182,0.1); }
+        .achievement-card.locked { opacity: 0.5; filter: grayscale(1); }
+        .achievement-card-icon { font-size: 2.2rem; margin-bottom: 8px; }
+        .achievement-card-name { color: var(--light); font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; }
+        .achievement-card-desc { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+        .flashcard-container { max-width: 550px; margin: 0 auto; }
+        .flashcard {
+            background: linear-gradient(135deg, var(--secondary), #0077B6);
+            border-radius: 22px;
+            padding: 50px 35px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back { backface-visibility: hidden; }
+        .flashcard-back {
+            transform: rotateY(180deg);
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 35px;
+        }
+        .flashcard-word { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: white; margin-bottom: 12px; }
+        .flashcard-hint { color: rgba(255,255,255,0.7); font-size: 0.95rem; }
+        .flashcard-nav { display: flex; justify-content: center; gap: 12px; margin-top: 22px; }
+        .challenge-code {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            color: var(--accent);
+            letter-spacing: 8px;
+            margin: 18px 0;
+        }
+        .challenge-code-input {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            text-align: center;
+            letter-spacing: 6px;
+            padding: 12px 25px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: var(--light);
+            width: 220px;
+            text-transform: uppercase;
+        }
+        .challenge-code-input:focus { outline: none; border-color: var(--accent); }
+        /* Teacher Mode Styles */
+        .teacher-screen {
+            text-align: center;
+            padding: 40px;
+        }
+        .teacher-pin-display {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            border-radius: 20px;
+            padding: 30px 50px;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .teacher-pin-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .teacher-pin {
+            font-family: 'Fredoka One', cursive;
+            font-size: 4rem;
+            color: white;
+            letter-spacing: 15px;
+        }
+        .teacher-url {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .teacher-students-list {
+            max-width: 600px;
+            margin: 30px auto;
+            text-align: left;
+        }
+        .teacher-student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .teacher-student-name {
+            color: var(--light);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .teacher-student-score {
+            color: var(--accent);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+        }
+        .teacher-student-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .teacher-student-status.playing { background: rgba(46,204,113,0.2); color: var(--success); }
+        .teacher-student-status.finished { background: rgba(247,201,72,0.2); color: var(--accent); }
+        .teacher-student-status.waiting { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+        .teacher-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .waiting-room {
+            text-align: center;
+            padding: 60px 40px;
+        }
+        .waiting-spinner {
+            font-size: 4rem;
+            animation: spin 2s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @media (max-width: 900px) { .world-map { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) {
+            header { padding: 12px 18px; }
+            .logo { font-size: 1.4rem; }
+            .stats-bar { gap: 8px; }
+            .stat { padding: 5px 10px; font-size: 0.8rem; }
+            .world-map { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .country-flag { font-size: 2rem; }
+            .quiz-modal { padding: 22px 18px; }
+            .answers-grid { grid-template-columns: 1fr; }
+            .welcome-title { font-size: 2rem; }
+            .mascot { font-size: 2.8rem; bottom: 10px; left: 10px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .teacher-pin { font-size: 3rem; letter-spacing: 10px; }
+        }
+        @media (max-width: 480px) {
+            .quiz-stats { width: 100%; justify-content: space-around; }
+            .hints-container { width: 100%; justify-content: center; margin-top: 8px; }
+            .country-info-card { flex-direction: column; text-align: center; }
+            .result-buttons { flex-direction: column; }
+            .result-buttons .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="bg-pattern"></div>
+    <div class="stars" id="stars"></div>
+    <div class="confetti-container" id="confettiContainer"></div>
+    <div class="mascot" id="mascot" onclick="mascotSpeak()">🦜<div class="mascot-speech" id="mascotSpeech">¡Hola! Soy Paco 🎉</div></div>
+    <header>
+        <div class="logo" onclick="goHome()"><span>🌎</span> Spanish Quest</div>
+        <div class="header-controls">
+            <div class="stats-bar">
+                <div class="stat"><span>🏆</span><span class="stat-value" id="totalScore">0</span></div>
+                <div class="stat"><span>⭐</span><span class="stat-value" id="totalStars">0</span></div>
+                <div class="stat"><span id="streakIcon">🔥</span><span class="stat-value" id="streakCount">0</span></div>
+                <div class="stat" onclick="showLeaderboard()"><span>📊</span><span>Ranking</span></div>
+                <div class="stat" onclick="showAchievements()"><span>🏅</span><span>Logros</span></div>
+            </div>
+            <button class="toggle-btn" id="soundToggle" onclick="toggleSound()">🔊</button>
+            <button class="toggle-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
+        </div>
+    </header>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div class="screen active" id="welcomeScreen">
+            <div class="welcome-container">
+                <div class="welcome-icon">🎮</div>
+                <h1 class="welcome-title">¡Bienvenido a Spanish Quest!</h1>
+                <p class="welcome-desc">Embárcate en una aventura por el mundo hispanohablante. Visita países, responde preguntas y mejora tu español mientras juegas.</p>
+                <div class="player-input-section">
+                    <label for="playerName">Tu nombre de jugador:</label>
+                    <input type="text" id="playerName" class="player-input" placeholder="Escribe tu nombre..." maxlength="20">
+                </div>
+                <div class="difficulty-section">
+                    <h3>Selecciona tu nivel:</h3>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn" data-level="A1" onclick="selectDifficulty('A1')">Principiante<span class="level-badge">Nivel A1</span></button>
+                        <button class="difficulty-btn selected" data-level="A2" onclick="selectDifficulty('A2')">Elemental<span class="level-badge">Nivel A2</span></button>
+                        <button class="difficulty-btn" data-level="B1" onclick="selectDifficulty('B1')">Intermedio<span class="level-badge">Nivel B1</span></button>
+                    </div>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-item"><span>🌍</span><span>10 países para explorar</span></div>
+                    <div class="feature-item"><span>📚</span><span>100+ preguntas</span></div>
+                    <div class="feature-item"><span>⏱️</span><span>Desafío con tiempo</span></div>
+                    <div class="feature-item"><span>🏅</span><span>Logros desbloqueables</span></div>
+                    <div class="feature-item"><span>💡</span><span>Explicaciones en español</span></div>
+                    <div class="feature-item"><span>🔥</span><span>Racha diaria</span></div>
+                </div>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="startGame()">¡Comenzar Aventura! 🚀</button>
+                    <button class="btn btn-secondary" onclick="showFlashcards()">📖 Estudiar Primero</button>
+                </div>
+                <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-small btn-purple" onclick="generateChallenge()">🎯 Crear Desafío</button>
+                    <button class="btn btn-small btn-secondary" onclick="joinChallenge()">🤝 Unirse a Desafío</button>
+                </div>
+                <div style="margin-top:15px;">
+                    <button class="btn btn-small btn-teacher" onclick="startTeacherMode()">👩‍🏫 Modo Profesor</button>
+                    <button class="btn btn-small btn-secondary" onclick="joinClassroom()">🎓 Unirse a Clase</button>
+                </div>
+            </div>
+        </div>
+        <!-- Map Screen -->
+        <div class="screen" id="mapScreen">
+            <div class="map-container">
+                <div class="map-header">
+                    <div>
+                        <h1 class="map-title">🗺️ Mapa del Mundo Hispano</h1>
+                        <p class="map-subtitle">Haz clic en un país para comenzar su misión</p>
+                    </div>
+                    <div class="category-filter" id="categoryFilter">
+                        <button class="category-btn selected" data-category="all" onclick="filterCategory('all')">Todas</button>
+                        <button class="category-btn" data-category="gramatica" onclick="filterCategory('gramatica')">Gramática</button>
+                        <button class="category-btn" data-category="vocabulario" onclick="filterCategory('vocabulario')">Vocabulario</button>
+                        <button class="category-btn" data-category="cultura" onclick="filterCategory('cultura')">Cultura</button>
+                    </div>
+                </div>
+                <div class="world-map" id="worldMap"></div>
+            </div>
+        </div>
+        <!-- Flashcard Screen -->
+        <div class="screen" id="flashcardScreen">
+            <div class="flashcard-container">
+                <h2 style="color:var(--light);text-align:center;margin-bottom:20px;font-family:'Fredoka One',cursive;">📖 Modo Estudio</h2>
+                <p style="color:rgba(255,255,255,0.7);text-align:center;margin-bottom:20px;">Haz clic en la tarjeta para ver la respuesta</p>
+                <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
+                    <div class="flashcard-front">
+                        <div class="flashcard-word" id="flashcardFront">Cargando...</div>
+                        <div class="flashcard-hint" id="flashcardHint">Categoría</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-word" id="flashcardBack" style="font-size:1.3rem;">Respuesta</div>
+                    </div>
+                </div>
+                <div class="flashcard-nav">
+                    <button class="btn btn-secondary" onclick="prevFlashcard()">⬅️ Anterior</button>
+                    <button class="btn btn-primary" onclick="nextFlashcard()">Siguiente ➡️</button>
+                </div>
+                <div style="text-align:center;margin-top:15px;"><span style="color:rgba(255,255,255,0.6);" id="flashcardProgress">1 / 10</span></div>
+                <div style="text-align:center;margin-top:20px;"><button class="btn btn-success" onclick="startGame()">¡Listo para Jugar! 🎮</button></div>
+            </div>
+        </div>
+        <!-- Teacher Mode Screen -->
+        <div class="screen" id="teacherScreen">
+            <div class="teacher-screen">
+                <h1 style="color:var(--light);font-family:'Fredoka One',cursive;font-size:2.5rem;margin-bottom:10px;">👩‍🏫 Modo Profesor</h1>
+                <p style="color:rgba(255,255,255,0.7);margin-bottom:20px;">Los estudiantes pueden unirse con este código PIN</p>
+                <div class="teacher-pin-display">
+                    <div class="teacher-pin-label">CÓDIGO DE CLASE</div>
+                    <div class="teacher-pin" id="classroomPin">----</div>
+                    <div class="teacher-url">Los estudiantes hacen clic en "Unirse a Clase"</div>
+                </div>
+                <div class="teacher-students-list" id="teacherStudentsList">
+                    <h3 style="color:var(--light);margin-bottom:15px;">📋 Estudiantes conectados: <span id="studentCount">0</span></h3>
+                    <div id="studentsContainer"></div>
+                </div>
+                <div class="teacher-controls">
+                    <button class="btn btn-success" onclick="startClassGame()" id="startClassBtn" disabled>▶️ Iniciar Juego</button>
+                    <button class="btn btn-secondary" onclick="endTeacherMode()">❌ Terminar Clase</button>
+                </div>
+            </div>
+        </div>
+        <!-- Student Waiting Room -->
+        <div class="screen" id="waitingRoom">
+            <div class="waiting-room">
+                <div class="waiting-spinner">⏳</div>
+                <h2 style="color:var(--light);font-family:'Fredoka One',cursive;font-size:2rem;margin-bottom:10px;">¡Estás conectado!</h2>
+                <p style="color:rgba(255,255,255,0.7);font-size:1.1rem;" id="waitingMessage">Esperando a que el profesor inicie el juego...</p>
+                <p style="color:var(--accent);font-size:1.2rem;margin-top:20px;">Clase de: <strong id="teacherNameDisplay">Profesor</strong></p>
+            </div>
+        </div>
+    </div>
+    <!-- Quiz Modal -->
+    <div class="modal-overlay" id="quizModal">
+        <div class="quiz-modal">
+            <button class="close-btn" onclick="closeQuiz()">×</button>
+            <div id="quizContent">
+                <div class="country-info-card">
+                    <span class="country-info-flag" id="countryFlag">🇪🇸</span>
+                    <div class="country-info-details">
+                        <h2 id="countryName">España</h2>
+                        <p id="countryCapital">Capital: Madrid</p>
+                        <p id="countryPopulation">Población: 47 millones</p>
+                        <div class="country-fun-fact" id="countryFunFact"><strong>¿Sabías que...?</strong> España tiene 47 sitios Patrimonio de la Humanidad.</div>
+                    </div>
+                </div>
+                <div class="quiz-header">
+                    <div class="quiz-stats">
+                        <div class="quiz-stat"><div class="quiz-stat-value" id="timerDisplay">30</div><div class="quiz-stat-label">Segundos</div></div>
+                        <div class="quiz-stat"><div class="quiz-stat-value" id="scoreDisplay">0</div><div class="quiz-stat-label">Puntos</div></div>
+                    </div>
+                    <div class="hints-container">
+                        <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 Pista</button>
+                        <span class="hints-remaining" id="hintsRemaining">2 restantes</span>
+                    </div>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="question-category" id="questionCategory">Gramática</div>
+                <div class="question-counter" id="questionCounter">Pregunta 1 de 5</div>
+                <div class="question-text" id="questionText">Cargando pregunta...</div>
+                <div class="answers-grid" id="answersGrid"></div>
+                <div class="explanation-box" id="explanationBox">
+                    <div class="explanation-title">💡 Explicación</div>
+                    <div class="explanation-text" id="explanationText"></div>
+                </div>
+            </div>
+            <div id="resultsContent" style="display:none;">
+                <div class="results-container">
+                    <div class="results-icon" id="resultsIcon">🎉</div>
+                    <h2 class="results-title" id="resultsTitle">¡Excelente!</h2>
+                    <p class="results-score" id="resultsScore">Has acertado <span>4</span> de <span>5</span> preguntas</p>
+                    <div class="stars-earned" id="starsEarned"></div>
+                    <div class="achievement-unlocked" id="achievementUnlocked"><div class="achievement-title">🏅 ¡Logro Desbloqueado!</div><div class="achievement-name" id="achievementName"><span>🎯</span> Primera Misión</div></div>
+                    <div class="review-section" id="reviewSection" style="display:none;"><div class="review-title">📝 Repaso de errores:</div><div id="reviewList"></div></div>
+                    <div class="result-buttons">
+                        <button class="btn btn-secondary" onclick="closeQuiz()">🗺️ Volver al Mapa</button>
+                        <button class="btn btn-primary" onclick="retryQuiz()">🔄 Intentar de Nuevo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Leaderboard Modal -->
+    <div class="modal-overlay" id="leaderboardModal">
+        <div class="leaderboard-modal">
+            <button class="close-btn" onclick="closeLeaderboard()">×</button>
+            <h2 class="leaderboard-title">🏆 Tabla de Clasificación</h2>
+            <ul class="leaderboard-list" id="leaderboardList"></ul>
+        </div>
+    </div>
+    <!-- Achievements Modal -->
+    <div class="modal-overlay" id="achievementsModal">
+        <div class="quiz-modal" style="max-width:650px;">
+            <button class="close-btn" onclick="closeAchievements()">×</button>
+            <h2 style="color:var(--light);text-align:center;font-family:'Fredoka One',cursive;margin-bottom:8px;">🏅 Tus Logros</h2>
+            <p style="color:rgba(255,255,255,0.6);text-align:center;margin-bottom:15px;" id="achievementProgress">0 de 12 desbloqueados</p>
+            <div class="achievements-grid" id="achievementsGrid"></div>
+        </div>
+    </div>
+    <!-- Challenge Modal -->
+    <div class="modal-overlay" id="challengeModal">
+        <div class="leaderboard-modal">
+            <button class="close-btn" onclick="closeChallengeModal()">×</button>
+            <div id="challengeContent" style="text-align:center;padding:20px;"></div>
+        </div>
+    </div>
+    <!-- Classroom Modal -->
+    <div class="modal-overlay" id="classroomModal">
+        <div class="leaderboard-modal">
+            <button class="close-btn" onclick="closeClassroomModal()">×</button>
+            <div id="classroomContent" style="text-align:center;padding:20px;"></div>
+        </div>
+    </div>
+    <script>
+        // ==================== GAME DATA ====================
+        const countries = [
+            { id: 'spain', name: 'España', flag: '🇪🇸', capital: 'Madrid', population: '47 millones', class: 'country-spain', funFact: 'España tiene más bares por habitante que cualquier otro país de la UE.' },
+            { id: 'mexico', name: 'México', flag: '🇲🇽', capital: 'Ciudad de México', population: '128 millones', class: 'country-mexico', funFact: 'México introdujo el chocolate, el chile y el maíz al mundo.' },
+            { id: 'argentina', name: 'Argentina', flag: '🇦🇷', capital: 'Buenos Aires', population: '45 millones', class: 'country-argentina', funFact: 'Argentina tiene más psicólogos per cápita que cualquier otro país.' },
+            { id: 'colombia', name: 'Colombia', flag: '🇨🇴', capital: 'Bogotá', population: '51 millones', class: 'country-colombia', funFact: 'Colombia es el segundo país con mayor biodiversidad del planeta.' },
+            { id: 'peru', name: 'Perú', flag: '🇵🇪', capital: 'Lima', population: '33 millones', class: 'country-peru', funFact: 'Perú tiene más de 3,000 variedades diferentes de papas.' },
+            { id: 'chile', name: 'Chile', flag: '🇨🇱', capital: 'Santiago', population: '19 millones', class: 'country-chile', funFact: 'Chile tiene el desierto más seco del mundo: el Atacama.' },
+            { id: 'ecuador', name: 'Ecuador', flag: '🇪🇨', capital: 'Quito', population: '18 millones', class: 'country-ecuador', funFact: 'Las Islas Galápagos inspiraron la teoría de la evolución de Darwin.' },
+            { id: 'venezuela', name: 'Venezuela', flag: '🇻🇪', capital: 'Caracas', population: '28 millones', class: 'country-venezuela', funFact: 'Venezuela tiene la cascada más alta del mundo: el Salto Ángel.' },
+            { id: 'cuba', name: 'Cuba', flag: '🇨🇺', capital: 'La Habana', population: '11 millones', class: 'country-cuba', funFact: 'Cuba tiene uno de los mejores sistemas de salud de Latinoamérica.' },
+            { id: 'costarica', name: 'Costa Rica', flag: '🇨🇷', capital: 'San José', population: '5 millones', class: 'country-costarica', funFact: 'Costa Rica no tiene ejército desde 1948.' }
+        ];
+
+        const questionBank = {
+            A1: [
+                { question: "¿Cuál es el artículo correcto? '___ libro'", answers: ["El", "La", "Los", "Las"], correct: 0, category: "gramatica", explanation: "'Libro' es masculino singular, por eso usamos 'el'." },
+                { question: "Completa: 'Yo ___ estudiante.'", answers: ["soy", "eres", "es", "somos"], correct: 0, category: "gramatica", explanation: "Con 'yo' siempre usamos 'soy'." },
+                { question: "¿Cómo se dice 'I have' en español?", answers: ["Yo tengo", "Yo soy", "Yo estoy", "Yo hago"], correct: 0, category: "gramatica", explanation: "'Tener' significa 'to have'." },
+                { question: "Completa: 'Ella ___ de México.'", answers: ["es", "está", "son", "están"], correct: 0, category: "gramatica", explanation: "Usamos 'ser' para origen o nacionalidad." },
+                { question: "¿Cuál es el plural de 'casa'?", answers: ["casas", "casaes", "casis", "casa"], correct: 0, category: "gramatica", explanation: "Añadimos -s a palabras que terminan en vocal." },
+                { question: "¿Qué significa 'buenos días'?", answers: ["Buenos días (mañana)", "Buenas noches", "Buenas tardes", "Adiós"], correct: 0, category: "vocabulario", explanation: "'Buenos días' se usa por la mañana." },
+                { question: "¿Cómo se dice 'water' en español?", answers: ["agua", "leche", "jugo", "café"], correct: 0, category: "vocabulario", explanation: "'Agua' es water." },
+                { question: "¿Qué día viene después del lunes?", answers: ["martes", "miércoles", "domingo", "viernes"], correct: 0, category: "vocabulario", explanation: "Orden: lunes, martes, miércoles..." },
+                { question: "¿Cuál es el número 'quince'?", answers: ["15", "50", "5", "25"], correct: 0, category: "vocabulario", explanation: "Quince = 15." },
+                { question: "¿Qué color es el cielo?", answers: ["azul", "verde", "rojo", "amarillo"], correct: 0, category: "vocabulario", explanation: "'Azul' es el color del cielo." },
+                { question: "¿Cuál es la capital de España?", answers: ["Madrid", "Barcelona", "Sevilla", "Valencia"], correct: 0, category: "cultura", explanation: "Madrid es la capital de España." },
+                { question: "¿Qué lengua se habla en México?", answers: ["español", "portugués", "italiano", "francés"], correct: 0, category: "cultura", explanation: "En México se habla español." }
+            ],
+            A2: [
+                { question: "Completa: 'Hoy yo ___ un café.'", answers: ["he tomado", "ha tomado", "has tomado", "hemos tomado"], correct: 0, category: "gramatica", explanation: "Con 'yo' usamos 'he' + participio." },
+                { question: "Completa: 'Ella nunca ___ a España.'", answers: ["ha viajado", "he viajado", "has viajado", "han viajado"], correct: 0, category: "gramatica", explanation: "Con 'ella' usamos 'ha' + participio." },
+                { question: "'Nosotros ___ la película.'", answers: ["hemos visto", "he visto", "han visto", "ha visto"], correct: 0, category: "gramatica", explanation: "Con 'nosotros' usamos 'hemos'." },
+                { question: "'Mi hermana ___ muy cansada.'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "'Estar' para estados temporales." },
+                { question: "'Barcelona ___ una ciudad bonita.'", answers: ["es", "está", "son", "están"], correct: 0, category: "gramatica", explanation: "'Ser' para características permanentes." },
+                { question: "'¿Dónde ___ el supermercado?'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "'Estar' para ubicación física." },
+                { question: "'La sopa ___ muy caliente.'", answers: ["está", "es", "son", "están"], correct: 0, category: "gramatica", explanation: "Temperatura es estado temporal." },
+                { question: "'Los estudiantes ___ de Francia.'", answers: ["son", "están", "es", "está"], correct: 0, category: "gramatica", explanation: "Origen es permanente, usamos 'ser'." },
+                { question: "¿Qué significa 'desayuno'?", answers: ["primera comida del día", "almuerzo", "cena", "merienda"], correct: 0, category: "vocabulario", explanation: "'Desayuno' es la primera comida." },
+                { question: "El opuesto de 'grande' es...", answers: ["pequeño", "alto", "largo", "ancho"], correct: 0, category: "vocabulario", explanation: "'Grande' y 'pequeño' son opuestos." },
+                { question: "¿Dónde duermes?", answers: ["en la cama", "en la cocina", "en el jardín", "en el garaje"], correct: 0, category: "vocabulario", explanation: "Dormimos en la cama." },
+                { question: "'A mí ___ el chocolate.'", answers: ["me gusta", "me gustan", "te gusta", "le gusta"], correct: 0, category: "gramatica", explanation: "'Gusta' singular para 'el chocolate'." },
+                { question: "'A ellos ___ las películas.'", answers: ["les gustan", "les gusta", "le gustan", "nos gustan"], correct: 0, category: "gramatica", explanation: "'Gustan' plural para 'las películas'." },
+                { question: "'Hace mucho frío' significa...", answers: ["Hace mucho frío", "Hace calor", "Llueve", "Hace sol"], correct: 0, category: "vocabulario", explanation: "'Hacer frío' = it's cold." },
+                { question: "'Son las tres y media' =", answers: ["3:30", "3:15", "3:45", "3:00"], correct: 0, category: "vocabulario", explanation: "'Y media' = 30 minutos." },
+                { question: "'¿___ vives?' - 'En Madrid.'", answers: ["Dónde", "Cuándo", "Quién", "Qué"], correct: 0, category: "gramatica", explanation: "'Dónde' pregunta por lugar." },
+                { question: "'¿___ cuesta?'", answers: ["Cuánto", "Cuándo", "Cómo", "Dónde"], correct: 0, category: "gramatica", explanation: "'Cuánto' para precio." },
+                { question: "¿Cuál es la moneda de España?", answers: ["el euro", "el peso", "el dólar", "la libra"], correct: 0, category: "cultura", explanation: "España usa el euro." },
+                { question: "La paella es de...", answers: ["España", "México", "Argentina", "Perú"], correct: 0, category: "cultura", explanation: "La paella es de Valencia." },
+                { question: "El tango es de...", answers: ["Argentina", "España", "Cuba", "Colombia"], correct: 0, category: "cultura", explanation: "El tango es de Buenos Aires." },
+                { question: "'El gato está ___ la mesa.'", answers: ["debajo de", "a", "con", "sin"], correct: 0, category: "gramatica", explanation: "'Debajo de' = under." },
+                { question: "'Voy ___ supermercado.'", answers: ["al", "a el", "en el", "del"], correct: 0, category: "gramatica", explanation: "'A + el' = 'al'." },
+                { question: "'Las casas son ___.'", answers: ["bonitas", "bonito", "bonitos", "bonita"], correct: 0, category: "gramatica", explanation: "Femenino plural = 'bonitas'." },
+                { question: "'¿Tienes el libro?' - 'Sí, ___ tengo.'", answers: ["lo", "la", "le", "les"], correct: 0, category: "gramatica", explanation: "'Lo' para masculino singular." }
+            ],
+            B1: [
+                { question: "'Espero que tú ___ bien.'", answers: ["estés", "estás", "estar", "estarás"], correct: 0, category: "gramatica", explanation: "'Espero que' + subjuntivo." },
+                { question: "'Quiero que ella ___ la verdad.'", answers: ["diga", "dice", "decir", "dirá"], correct: 0, category: "gramatica", explanation: "'Querer que' + subjuntivo." },
+                { question: "'Es importante que ___.'", answers: ["estudiemos", "estudiamos", "estudiar", "estudiaremos"], correct: 0, category: "gramatica", explanation: "'Es importante que' + subjuntivo." },
+                { question: "'Si tuviera dinero, ___ un coche.'", answers: ["compraría", "compro", "compré", "he comprado"], correct: 0, category: "gramatica", explanation: "Si + imperfecto subjuntivo → condicional." },
+                { question: "'Me ___ ir de vacaciones.'", answers: ["gustaría", "gusta", "gustó", "gustaba"], correct: 0, category: "gramatica", explanation: "Condicional para deseos corteses." },
+                { question: "'Cuando era niño, ___ al parque.'", answers: ["iba", "fui", "voy", "iré"], correct: 0, category: "gramatica", explanation: "Imperfecto para acciones habituales." },
+                { question: "'Ayer ___ a María.'", answers: ["vi", "veía", "veo", "he visto"], correct: 0, category: "gramatica", explanation: "Indefinido para acciones puntuales." },
+                { question: "'Mientras yo ___, ella cocinaba.'", answers: ["estudiaba", "estudié", "estudio", "estudiaré"], correct: 0, category: "gramatica", explanation: "'Mientras' + imperfecto." },
+                { question: "'La chica ___ conocí es simpática.'", answers: ["que", "quien", "cual", "cuyo"], correct: 0, category: "gramatica", explanation: "'Que' es el relativo más común." },
+                { question: "'Echar de menos' significa...", answers: ["extrañar", "tirar", "perder", "olvidar"], correct: 0, category: "vocabulario", explanation: "'Echar de menos' = to miss." },
+                { question: "'Tener ganas de' significa...", answers: ["tener deseo de", "tener miedo", "tener hambre", "estar cansado"], correct: 0, category: "vocabulario", explanation: "'Tener ganas de' = feel like." },
+                { question: "'Este regalo es ___ ti.'", answers: ["para", "por", "a", "de"], correct: 0, category: "gramatica", explanation: "'Para' indica destinatario." },
+                { question: "'Gracias ___ tu ayuda.'", answers: ["por", "para", "a", "de"], correct: 0, category: "gramatica", explanation: "'Por' indica causa." },
+                { question: "¿Qué es 'la siesta'?", answers: ["Descanso después de comer", "Fiesta", "Comida", "Baile"], correct: 0, category: "cultura", explanation: "La siesta es descansar después de comer." },
+                { question: "El Día de los Muertos es de...", answers: ["México", "España", "Argentina", "Chile"], correct: 0, category: "cultura", explanation: "Se celebra en México." },
+                { question: "¿Qué es 'el mate'?", answers: ["Infusión argentina", "Baile español", "Comida mexicana", "Instrumento"], correct: 0, category: "cultura", explanation: "El mate es infusión de yerba mate." },
+                { question: "'Costar un ojo de la cara' =", answers: ["ser muy caro", "ser difícil", "doler", "ser feo"], correct: 0, category: "vocabulario", explanation: "Significa que algo es muy caro." },
+                { question: "'Estar como una cabra' =", answers: ["estar loco", "estar enfermo", "estar cansado", "estar feliz"], correct: 0, category: "vocabulario", explanation: "Significa estar loco." }
+            ]
+        };
+
+        const achievements = [
+            { id: 'first_quest', name: 'Primera Misión', desc: 'Completa tu primera misión', icon: '🎯', unlocked: false },
+            { id: 'perfect_score', name: 'Perfeccionista', desc: 'Consigue 5/5', icon: '💯', unlocked: false },
+            { id: 'speed_demon', name: 'Rayo Veloz', desc: 'Responde en <5 segundos', icon: '⚡', unlocked: false },
+            { id: 'explorer', name: 'Explorador', desc: 'Visita 5 países', icon: '🧭', unlocked: false },
+            { id: 'world_traveler', name: 'Viajero Mundial', desc: 'Completa todos', icon: '🌍', unlocked: false },
+            { id: 'streak_3', name: 'En Racha', desc: 'Racha de 3 días', icon: '🔥', unlocked: false },
+            { id: 'streak_7', name: 'Dedicación', desc: 'Racha de 7 días', icon: '💪', unlocked: false },
+            { id: 'no_hints', name: 'Sin Ayuda', desc: 'Sin usar pistas', icon: '🧠', unlocked: false },
+            { id: 'grammar_master', name: 'Gramático', desc: '20 de gramática', icon: '📝', unlocked: false },
+            { id: 'culture_expert', name: 'Cultural', desc: '10 de cultura', icon: '🎭', unlocked: false },
+            { id: 'vocabulary_king', name: 'Vocabulario', desc: '20 de vocabulario', icon: '📚', unlocked: false },
+            { id: 'star_collector', name: 'Coleccionista', desc: '30 estrellas', icon: '⭐', unlocked: false }
+        ];
+
+        const flashcards = [
+            { front: "Ser vs Estar", back: "SER: identidad, origen. ESTAR: ubicación, estado temporal.", category: "Gramática" },
+            { front: "Pretérito Perfecto", back: "He/Has/Ha/Hemos/Han + participio (-ado/-ido)", category: "Gramática" },
+            { front: "Gustar", back: "A mí ME gusta, A ti TE gusta, A él LE gusta", category: "Gramática" },
+            { front: "Por vs Para", back: "POR: causa. PARA: destino, propósito.", category: "Gramática" },
+            { front: "Subjuntivo", back: "Después de: querer que, esperar que...", category: "Gramática" },
+            { front: "Buenos días", back: "Good morning", category: "Saludos" },
+            { front: "Buenas tardes", back: "Good afternoon", category: "Saludos" },
+            { front: "¿Cuánto cuesta?", back: "How much does it cost?", category: "Frases" },
+            { front: "Echar de menos", back: "To miss someone", category: "Expresiones" },
+            { front: "Tener ganas de", back: "To feel like", category: "Expresiones" }
+        ];
+
+        // ==================== GAME STATE ====================
+        let gameState = {
+            playerName: '', difficulty: 'A2', totalScore: 0, totalStars: 0, streak: 0, lastPlayDate: null,
+            completedCountries: {}, currentCountry: null, currentQuestions: [], currentQuestionIndex: 0,
+            correctAnswers: 0, wrongAnswers: [], timer: 30, timerInterval: null, hintsRemaining: 2,
+            hintsUsedThisQuiz: false, currentQuizScore: 0, soundEnabled: true, theme: 'dark',
+            selectedCategory: 'all', achievements: JSON.parse(JSON.stringify(achievements)),
+            categoryStats: { gramatica: 0, vocabulario: 0, cultura: 0 }, flashcardIndex: 0, answerStartTime: null,
+            isTeacher: false, classroomPin: null, classroomStudents: [], isStudent: false, teacherName: ''
+        };
+
+        // ==================== AUDIO ====================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); }
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            initAudio();
+            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const sounds = {
+                correct: () => { osc.frequency.setValueAtTime(523, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime+0.1); osc.frequency.setValueAtTime(784, audioCtx.currentTime+0.2); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.4); osc.start(); osc.stop(audioCtx.currentTime+0.4); },
+                wrong: () => { osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.frequency.setValueAtTime(150, audioCtx.currentTime+0.15); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.3); osc.start(); osc.stop(audioCtx.currentTime+0.3); },
+                tick: () => { osc.frequency.setValueAtTime(800, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.05); osc.start(); osc.stop(audioCtx.currentTime+0.05); },
+                click: () => { osc.frequency.setValueAtTime(600, audioCtx.currentTime); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.08); osc.start(); osc.stop(audioCtx.currentTime+0.08); }
+            };
+            if (sounds[type]) sounds[type]();
+        }
+
+        // ==================== INIT ====================
+        function init() {
+            loadGameState(); createStars(); updateStats(); checkStreak(); generateCountryButtons(); updateMascot('wave');
+            document.body.dataset.theme = gameState.theme;
+            document.getElementById('themeToggle').textContent = gameState.theme === 'dark' ? '🌙' : '☀️';
+            document.getElementById('soundToggle').textContent = gameState.soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundToggle').classList.toggle('muted', !gameState.soundEnabled);
+            if (gameState.playerName) document.getElementById('playerName').value = gameState.playerName;
+            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.toggle('selected', b.dataset.level === gameState.difficulty));
+        }
+        function createStars() {
+            const c = document.getElementById('stars'); c.innerHTML = '';
+            for (let i = 0; i < 70; i++) {
+                const s = document.createElement('div'); s.className = 'star';
+                s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;width:${Math.random()*2+1}px;height:${s.style.width}`;
+                c.appendChild(s);
+            }
+        }
+        function saveGameState() {
+            localStorage.setItem('spanishQuestSave', JSON.stringify({
+                playerName: gameState.playerName, difficulty: gameState.difficulty, totalScore: gameState.totalScore,
+                totalStars: gameState.totalStars, streak: gameState.streak, lastPlayDate: gameState.lastPlayDate,
+                completedCountries: gameState.completedCountries, soundEnabled: gameState.soundEnabled,
+                theme: gameState.theme, achievements: gameState.achievements, categoryStats: gameState.categoryStats
+            }));
+            updateLeaderboard();
+        }
+        function loadGameState() {
+            const saved = localStorage.getItem('spanishQuestSave');
+            if (saved) Object.assign(gameState, JSON.parse(saved));
+        }
+
+        // ==================== LEADERBOARD & ACHIEVEMENTS ====================
+        function updateLeaderboard() {
+            if (!gameState.playerName) return;
+            let lb = JSON.parse(localStorage.getItem('spanishQuestLeaderboard') || '[]');
+            const idx = lb.findIndex(p => p.name === gameState.playerName);
+            const data = { name: gameState.playerName, score: gameState.totalScore, stars: gameState.totalStars, countries: Object.keys(gameState.completedCountries).length };
+            idx >= 0 ? lb[idx] = data : lb.push(data);
+            lb.sort((a,b) => b.score - a.score);
+            localStorage.setItem('spanishQuestLeaderboard', JSON.stringify(lb.slice(0,10)));
+        }
+        function showLeaderboard() {
+            playSound('click');
+            const lb = JSON.parse(localStorage.getItem('spanishQuestLeaderboard') || '[]');
+            document.getElementById('leaderboardList').innerHTML = lb.length === 0 ? '<li class="leaderboard-item" style="justify-content:center;color:rgba(255,255,255,0.6);">¡Sé el primero!</li>' : lb.map((p,i) => `<li class="leaderboard-item ${p.name===gameState.playerName?'current-player':''}"><span class="leaderboard-rank ${['gold','silver','bronze'][i]||''}">${i+1}</span><div class="leaderboard-info"><div class="leaderboard-name">${p.name}${p.name===gameState.playerName?' (Tú)':''}</div><div class="leaderboard-stats">⭐${p.stars} · 🗺️${p.countries}</div></div><span class="leaderboard-score">${p.score}</span></li>`).join('');
+            document.getElementById('leaderboardModal').classList.add('active');
+        }
+        function closeLeaderboard() { document.getElementById('leaderboardModal').classList.remove('active'); }
+        function showAchievements() {
+            playSound('click');
+            const unlocked = gameState.achievements.filter(a => a.unlocked).length;
+            document.getElementById('achievementProgress').textContent = `${unlocked} de ${gameState.achievements.length} desbloqueados`;
+            document.getElementById('achievementsGrid').innerHTML = gameState.achievements.map(a => `<div class="achievement-card ${a.unlocked?'unlocked':'locked'}"><div class="achievement-card-icon">${a.icon}</div><div class="achievement-card-name">${a.name}</div><div class="achievement-card-desc">${a.desc}</div></div>`).join('');
+            document.getElementById('achievementsModal').classList.add('active');
+        }
+        function closeAchievements() { document.getElementById('achievementsModal').classList.remove('active'); }
+        function checkAndUnlockAchievement(id) {
+            const a = gameState.achievements.find(x => x.id === id);
+            if (a && !a.unlocked) { a.unlocked = true; document.getElementById('achievementName').innerHTML = `<span>${a.icon}</span> ${a.name}`; document.getElementById('achievementUnlocked').classList.add('show'); saveGameState(); return true; }
+            return false;
+        }
+
+        // ==================== STREAK & MASCOT ====================
+        function checkStreak() {
+            const today = new Date().toDateString();
+            if (gameState.lastPlayDate) {
+                const last = new Date(gameState.lastPlayDate), yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+                if (last.toDateString() !== yesterday.toDateString() && last.toDateString() !== today) gameState.streak = 0;
+            }
+            updateStreakDisplay();
+        }
+        function updateStreak() {
+            const today = new Date().toDateString();
+            if (gameState.lastPlayDate !== today) { gameState.streak++; gameState.lastPlayDate = today; if(gameState.streak>=3)checkAndUnlockAchievement('streak_3'); if(gameState.streak>=7)checkAndUnlockAchievement('streak_7'); saveGameState(); }
+            updateStreakDisplay();
+        }
+        function updateStreakDisplay() { document.getElementById('streakCount').textContent = gameState.streak; document.getElementById('streakIcon').classList.toggle('streak-fire', gameState.streak >= 3); }
+        const mascotPhrases = { wave: ['¡Hola! Soy Paco 🎉','¿Listo para aprender?'], happy: ['¡Excelente! 🎉','¡Muy bien! 👏'], sad: ['¡Ánimo! 💪','Sigue intentando'], thinking: ['Hmm... 🤔'], hint: ['¡Una pista!'] };
+        function updateMascot(state, msg = null) {
+            const m = document.getElementById('mascot'), s = document.getElementById('mascotSpeech');
+            m.className = 'mascot ' + state;
+            s.textContent = msg || mascotPhrases[state][Math.floor(Math.random()*mascotPhrases[state].length)];
+            s.classList.add('show'); setTimeout(() => s.classList.remove('show'), 2500);
+        }
+        function mascotSpeak() { updateMascot('wave'); }
+
+        // ==================== THEME, SOUND, CONFETTI ====================
+        function toggleTheme() { playSound('click'); gameState.theme = gameState.theme==='dark'?'light':'dark'; document.body.dataset.theme = gameState.theme; document.getElementById('themeToggle').textContent = gameState.theme==='dark'?'🌙':'☀️'; saveGameState(); }
+        function toggleSound() { gameState.soundEnabled = !gameState.soundEnabled; document.getElementById('soundToggle').textContent = gameState.soundEnabled?'🔊':'🔇'; document.getElementById('soundToggle').classList.toggle('muted', !gameState.soundEnabled); if(gameState.soundEnabled) playSound('click'); saveGameState(); }
+        function createConfetti() {
+            const c = document.getElementById('confettiContainer'), colors = ['#FF6B35','#F7C948','#2ECC71','#9B59B6','#3498DB'];
+            for (let i = 0; i < 50; i++) { const p = document.createElement('div'); p.className = 'confetti'; p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.5}s`; c.appendChild(p); setTimeout(() => p.remove(), 3000); }
+        }
+
+        // ==================== GAME FLOW ====================
+        function selectDifficulty(level) { playSound('click'); gameState.difficulty = level; document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.toggle('selected', b.dataset.level === level)); }
+        function startGame() { playSound('click'); gameState.playerName = document.getElementById('playerName').value.trim()||'Jugador'; saveGameState(); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('mapScreen').classList.add('active'); generateCountryButtons(); updateMascot('wave','¡Elige un país!'); }
+        function goHome() { playSound('click'); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('welcomeScreen').classList.add('active'); }
+        function filterCategory(cat) { playSound('click'); gameState.selectedCategory = cat; document.querySelectorAll('.category-btn').forEach(b => b.classList.toggle('selected', b.dataset.category === cat)); }
+        function updateStats() { document.getElementById('totalScore').textContent = gameState.totalScore; document.getElementById('totalStars').textContent = gameState.totalStars; document.getElementById('streakCount').textContent = gameState.streak; }
+        function generateCountryButtons() {
+            const m = document.getElementById('worldMap'); m.innerHTML = '';
+            countries.forEach(c => {
+                const b = document.createElement('button'); b.className = `country-btn ${c.class}`; b.id = `country-${c.id}`;
+                const d = gameState.completedCountries[c.id]; if(d){b.classList.add('completed'); if(d.stars===3)b.classList.add('perfect');}
+                b.innerHTML = `<div class="country-content"><span class="country-flag">${c.flag}</span><span class="country-name">${c.name}</span><span class="country-stars">${d?'⭐'.repeat(d.stars):''}</span></div>`;
+                b.onclick = () => startQuiz(c); m.appendChild(b);
+            });
+        }
+
+        // ==================== QUIZ ====================
+        function shuffleArray(a) { const s=[...a]; for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];} return s; }
+        function getRandomQuestions(n=5) {
+            let pool = questionBank[gameState.difficulty] || questionBank.A2;
+            if (gameState.selectedCategory !== 'all') pool = pool.filter(q => q.category === gameState.selectedCategory);
+            return shuffleArray(pool).slice(0,n).map(q => { const corr=q.answers[q.correct], shuf=shuffleArray([...q.answers]); return {...q, answers:shuf, correct:shuf.indexOf(corr)}; });
+        }
+        function startQuiz(country) {
+            playSound('click'); gameState.currentCountry = country; gameState.currentQuestions = getRandomQuestions(5);
+            gameState.currentQuestionIndex = 0; gameState.correctAnswers = 0; gameState.wrongAnswers = [];
+            gameState.hintsRemaining = 2; gameState.hintsUsedThisQuiz = false; gameState.currentQuizScore = 0;
+            document.getElementById('countryFlag').textContent = country.flag;
+            document.getElementById('countryName').textContent = country.name;
+            document.getElementById('countryCapital').textContent = `Capital: ${country.capital}`;
+            document.getElementById('countryPopulation').textContent = `Población: ${country.population}`;
+            document.getElementById('countryFunFact').innerHTML = `<strong>¿Sabías que...?</strong> ${country.funFact}`;
+            document.getElementById('quizContent').style.display = 'block';
+            document.getElementById('resultsContent').style.display = 'none';
+            document.getElementById('explanationBox').classList.remove('show');
+            document.getElementById('hintsRemaining').textContent = '2 restantes';
+            document.getElementById('hintBtn').disabled = false;
+            document.getElementById('quizModal').classList.add('active');
+            updateMascot('thinking','¡Vamos!'); loadQuestion();
+        }
+        function loadQuestion() {
+            const q = gameState.currentQuestions[gameState.currentQuestionIndex];
+            document.getElementById('progressFill').style.width = (gameState.currentQuestionIndex/gameState.currentQuestions.length)*100+'%';
+            document.getElementById('questionCounter').textContent = `Pregunta ${gameState.currentQuestionIndex+1} de ${gameState.currentQuestions.length}`;
+            document.getElementById('questionCategory').textContent = {gramatica:'Gramática',vocabulario:'Vocabulario',cultura:'Cultura'}[q.category]||q.category;
+            document.getElementById('questionText').textContent = q.question;
+            const g = document.getElementById('answersGrid'); g.innerHTML = '';
+            q.answers.forEach((a,i) => { const b=document.createElement('button'); b.className='answer-btn'; b.textContent=a; b.onclick=()=>selectAnswer(i); g.appendChild(b); });
+            document.getElementById('explanationBox').classList.remove('show');
+            document.getElementById('scoreDisplay').textContent = gameState.currentQuizScore;
+            gameState.answerStartTime = Date.now(); startTimer();
+        }
+        function startTimer() {
+            gameState.timer = 30; updateTimerDisplay();
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            gameState.timerInterval = setInterval(() => { gameState.timer--; updateTimerDisplay(); if(gameState.timer<=5)playSound('tick'); if(gameState.timer<=0){clearInterval(gameState.timerInterval);timeUp();} }, 1000);
+        }
+        function updateTimerDisplay() { const t=document.getElementById('timerDisplay'); t.textContent=gameState.timer; t.classList.toggle('timer-warning',gameState.timer<=10); }
+        function timeUp() {
+            const q = gameState.currentQuestions[gameState.currentQuestionIndex];
+            document.querySelectorAll('.answer-btn').forEach((b,i) => { b.disabled=true; if(i===q.correct)b.classList.add('correct'); });
+            gameState.wrongAnswers.push({ question:q.question, yourAnswer:'Sin respuesta', correctAnswer:q.answers[q.correct], explanation:q.explanation });
+            playSound('wrong'); updateMascot('sad'); showExplanation(q.explanation); setTimeout(nextQuestion, 3000);
+        }
+        function selectAnswer(idx) {
+            clearInterval(gameState.timerInterval);
+            const q = gameState.currentQuestions[gameState.currentQuestionIndex], btns = document.querySelectorAll('.answer-btn'), answerTime = (Date.now()-gameState.answerStartTime)/1000;
+            btns.forEach((b,i) => { b.disabled=true; if(i===q.correct)b.classList.add('correct'); });
+            if (idx === q.correct) {
+                gameState.correctAnswers++; gameState.categoryStats[q.category]++;
+                gameState.currentQuizScore += 100 + Math.floor(gameState.timer * 2);
+                btns[idx].classList.add('correct'); playSound('correct'); updateMascot('happy');
+                if (answerTime < 5) checkAndUnlockAchievement('speed_demon');
+                if (gameState.categoryStats.gramatica >= 20) checkAndUnlockAchievement('grammar_master');
+                if (gameState.categoryStats.cultura >= 10) checkAndUnlockAchievement('culture_expert');
+                if (gameState.categoryStats.vocabulario >= 20) checkAndUnlockAchievement('vocabulary_king');
+            } else {
+                btns[idx].classList.add('incorrect'); playSound('wrong'); updateMascot('sad');
+                gameState.wrongAnswers.push({ question:q.question, yourAnswer:q.answers[idx], correctAnswer:q.answers[q.correct], explanation:q.explanation });
+            }
+            showExplanation(q.explanation); document.getElementById('scoreDisplay').textContent = gameState.currentQuizScore; setTimeout(nextQuestion, 3000);
+        }
+        function showExplanation(text) { document.getElementById('explanationText').textContent = text; document.getElementById('explanationBox').classList.add('show'); }
+        function useHint() {
+            if (gameState.hintsRemaining <= 0) return;
+            playSound('click'); gameState.hintsRemaining--; gameState.hintsUsedThisQuiz = true;
+            document.getElementById('hintsRemaining').textContent = `${gameState.hintsRemaining} restantes`;
+            if (gameState.hintsRemaining <= 0) document.getElementById('hintBtn').disabled = true;
+            const q = gameState.currentQuestions[gameState.currentQuestionIndex], btns = document.querySelectorAll('.answer-btn');
+            const wrong = []; q.answers.forEach((_,i) => { if(i!==q.correct) wrong.push(i); });
+            shuffleArray(wrong).slice(0,2).forEach(i => btns[i].classList.add('eliminated'));
+            updateMascot('hint');
+        }
+        function nextQuestion() { gameState.currentQuestionIndex++; gameState.currentQuestionIndex < gameState.currentQuestions.length ? loadQuestion() : showResults(); }
+        function showResults() {
+            document.getElementById('quizContent').style.display = 'none'; document.getElementById('resultsContent').style.display = 'block';
+            const score = gameState.correctAnswers, total = gameState.currentQuestions.length, pct = (score/total)*100;
+            let stars = 0; if(pct>=60)stars=1; if(pct>=80)stars=2; if(pct>=100)stars=3;
+            const [icon,title] = pct>=80?['🎉','¡Excelente!']:pct>=60?['😊','¡Muy bien!']:pct>=40?['💪','¡Sigue practicando!']:['📚','¡No te rindas!'];
+            if(pct>=80) createConfetti();
+            document.getElementById('resultsIcon').textContent = icon;
+            document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('resultsScore').innerHTML = `Has acertado <span>${score}</span> de <span>${total}</span><br><small style="opacity:0.7">${gameState.currentQuizScore} puntos</small>`;
+            const starsC = document.getElementById('starsEarned'); starsC.innerHTML = '';
+            for(let i=0;i<3;i++){ const sp=document.createElement('span'); sp.className='star-icon'+(i<stars?' earned':''); sp.textContent='⭐'; if(i<stars)sp.style.animationDelay=(i*0.2)+'s'; starsC.appendChild(sp); }
+            if(pct>=60){
+                const cid=gameState.currentCountry.id, existing=gameState.completedCountries[cid];
+                if(!existing||stars>existing.stars){
+                    gameState.completedCountries[cid]={stars,score:gameState.currentQuizScore};
+                    gameState.totalStars += existing ? stars-existing.stars : stars;
+                    gameState.totalScore += existing ? gameState.currentQuizScore-existing.score : gameState.currentQuizScore;
+                    checkAndUnlockAchievement('first_quest'); if(pct===100)checkAndUnlockAchievement('perfect_score'); if(!gameState.hintsUsedThisQuiz)checkAndUnlockAchievement('no_hints');
+                    const cc=Object.keys(gameState.completedCountries).length; if(cc>=5)checkAndUnlockAchievement('explorer'); if(cc>=10)checkAndUnlockAchievement('world_traveler'); if(gameState.totalStars>=30)checkAndUnlockAchievement('star_collector');
+                    updateStats(); updateStreak(); saveGameState(); generateCountryButtons();
+                }
+            }
+            const rev=document.getElementById('reviewSection'), revList=document.getElementById('reviewList');
+            if(gameState.wrongAnswers.length>0){ rev.style.display='block'; revList.innerHTML=gameState.wrongAnswers.map(w=>`<div class="review-item"><div class="review-question">${w.question}</div><div class="review-answer">Tu: <span class="wrong">${w.yourAnswer}</span> | Correcta: <span class="correct">${w.correctAnswer}</span></div><div class="review-explanation">💡 ${w.explanation}</div></div>`).join(''); }
+            else rev.style.display='none';
+            document.getElementById('achievementUnlocked').classList.remove('show'); updateMascot(pct>=60?'happy':'sad');
+            if(gameState.isStudent) updateStudentScore();
+        }
+        function retryQuiz() { playSound('click'); startQuiz(gameState.currentCountry); }
+        function closeQuiz() { playSound('click'); clearInterval(gameState.timerInterval); document.getElementById('quizModal').classList.remove('active'); }
+
+        // ==================== FLASHCARDS ====================
+        function showFlashcards() { playSound('click'); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('flashcardScreen').classList.add('active'); gameState.flashcardIndex=0; updateFlashcard(); }
+        function updateFlashcard() { const f=flashcards[gameState.flashcardIndex]; document.getElementById('flashcardFront').textContent=f.front; document.getElementById('flashcardHint').textContent=f.category; document.getElementById('flashcardBack').textContent=f.back; document.getElementById('flashcardProgress').textContent=`${gameState.flashcardIndex+1} / ${flashcards.length}`; document.getElementById('flashcard').classList.remove('flipped'); }
+        function flipFlashcard() { playSound('click'); document.getElementById('flashcard').classList.toggle('flipped'); }
+        function nextFlashcard() { playSound('click'); gameState.flashcardIndex=(gameState.flashcardIndex+1)%flashcards.length; updateFlashcard(); }
+        function prevFlashcard() { playSound('click'); gameState.flashcardIndex=(gameState.flashcardIndex-1+flashcards.length)%flashcards.length; updateFlashcard(); }
+
+        // ==================== CHALLENGE MODE ====================
+        function generateChallenge() {
+            playSound('click');
+            const code = Math.random().toString(36).substring(2,8).toUpperCase();
+            localStorage.setItem(`challenge_${code}`, JSON.stringify({ code, creator:gameState.playerName, difficulty:gameState.difficulty, created:Date.now() }));
+            document.getElementById('challengeContent').innerHTML = `<h2 style="color:var(--light);margin-bottom:12px;">🎯 Tu Código de Desafío</h2><p style="color:rgba(255,255,255,0.7);">Comparte este código con tus amigos:</p><div class="challenge-code">${code}</div><p style="color:rgba(255,255,255,0.6);font-size:0.85rem;">Ellos jugarán con tu nivel (${gameState.difficulty}) y podrán comparar puntuaciones en el Ranking.</p><button class="btn btn-primary" style="margin-top:15px;" onclick="closeChallengeModal()">Entendido</button>`;
+            document.getElementById('challengeModal').classList.add('active');
+        }
+        function joinChallenge() {
+            playSound('click');
+            document.getElementById('challengeContent').innerHTML = `<h2 style="color:var(--light);margin-bottom:12px;">🤝 Unirse a Desafío</h2><p style="color:rgba(255,255,255,0.7);margin-bottom:15px;">Introduce el código de tu amigo:</p><input type="text" class="challenge-code-input" id="challengeCodeInput" maxlength="6" placeholder="CÓDIGO"><div style="margin-top:15px;"><button class="btn btn-primary" onclick="submitChallengeCode()">Unirse</button> <button class="btn btn-secondary" onclick="closeChallengeModal()">Cancelar</button></div><p id="challengeError" style="color:var(--danger);margin-top:12px;display:none;">Código no encontrado</p>`;
+            document.getElementById('challengeModal').classList.add('active');
+        }
+        function submitChallengeCode() {
+            const code=document.getElementById('challengeCodeInput').value.toUpperCase(), data=localStorage.getItem(`challenge_${code}`);
+            if(data){ const d=JSON.parse(data); gameState.difficulty=d.difficulty; document.querySelectorAll('.difficulty-btn').forEach(b=>b.classList.toggle('selected',b.dataset.level===d.difficulty)); closeChallengeModal(); startGame(); updateMascot('wave',`¡Desafío de ${d.creator}!`); }
+            else document.getElementById('challengeError').style.display='block';
+        }
+        function closeChallengeModal() { document.getElementById('challengeModal').classList.remove('active'); }
+
+        // ==================== TEACHER/CLASS MODE ====================
+        function startTeacherMode() {
+            playSound('click');
+            const teacherName = document.getElementById('playerName').value.trim() || 'Profesor';
+            gameState.playerName = teacherName;
+            gameState.isTeacher = true;
+            gameState.classroomPin = Math.floor(1000 + Math.random() * 9000).toString();
+            gameState.classroomStudents = [];
+            
+            // Save classroom data
+            localStorage.setItem(`classroom_${gameState.classroomPin}`, JSON.stringify({
+                pin: gameState.classroomPin,
+                teacher: teacherName,
+                difficulty: gameState.difficulty,
+                students: [],
+                started: false,
+                created: Date.now()
+            }));
+            
+            document.getElementById('classroomPin').textContent = gameState.classroomPin;
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('teacherScreen').classList.add('active');
+            
+            // Start polling for students
+            startTeacherPolling();
+            updateMascot('wave', '¡Modo Profesor activado!');
+        }
+        
+        function startTeacherPolling() {
+            gameState.teacherPollInterval = setInterval(() => {
+                const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
+                if (classData.students) {
+                    gameState.classroomStudents = classData.students;
+                    updateStudentsList();
+                }
+            }, 1000);
+        }
+        
+        function updateStudentsList() {
+            const container = document.getElementById('studentsContainer');
+            document.getElementById('studentCount').textContent = gameState.classroomStudents.length;
+            document.getElementById('startClassBtn').disabled = gameState.classroomStudents.length === 0;
+            
+            container.innerHTML = gameState.classroomStudents.map(s => `
+                <div class="teacher-student-item">
+                    <span class="teacher-student-name">${s.name}</span>
+                    <span class="teacher-student-status ${s.status}">${s.status === 'waiting' ? '⏳ Esperando' : s.status === 'playing' ? '🎮 Jugando' : '✅ Terminado'}</span>
+                    <span class="teacher-student-score">${s.score || 0} pts</span>
+                </div>
+            `).join('') || '<p style="color:rgba(255,255,255,0.5);text-align:center;">Esperando estudiantes...</p>';
+        }
+        
+        function startClassGame() {
+            playSound('click');
+            const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
+            classData.started = true;
+            classData.startTime = Date.now();
+            localStorage.setItem(`classroom_${gameState.classroomPin}`, JSON.stringify(classData));
+            updateMascot('happy', '¡Juego iniciado!');
+        }
+        
+        function endTeacherMode() {
+            playSound('click');
+            clearInterval(gameState.teacherPollInterval);
+            localStorage.removeItem(`classroom_${gameState.classroomPin}`);
+            gameState.isTeacher = false;
+            gameState.classroomPin = null;
+            goHome();
+        }
+        
+        function joinClassroom() {
+            playSound('click');
+            document.getElementById('classroomContent').innerHTML = `
+                <h2 style="color:var(--light);margin-bottom:12px;">🎓 Unirse a una Clase</h2>
+                <p style="color:rgba(255,255,255,0.7);margin-bottom:15px;">Introduce el PIN de la clase:</p>
+                <input type="text" class="challenge-code-input" id="classroomPinInput" maxlength="4" placeholder="PIN">
+                <div style="margin-top:15px;">
+                    <button class="btn btn-primary" onclick="submitClassroomPin()">Unirse</button>
+                    <button class="btn btn-secondary" onclick="closeClassroomModal()">Cancelar</button>
+                </div>
+                <p id="classroomError" style="color:var(--danger);margin-top:12px;display:none;">Clase no encontrada</p>
+            `;
+            document.getElementById('classroomModal').classList.add('active');
+        }
+        
+        function submitClassroomPin() {
+            const pin = document.getElementById('classroomPinInput').value;
+            const classData = JSON.parse(localStorage.getItem(`classroom_${pin}`) || 'null');
+            
+            if (classData) {
+                gameState.isStudent = true;
+                gameState.classroomPin = pin;
+                gameState.teacherName = classData.teacher;
+                gameState.difficulty = classData.difficulty;
+                gameState.playerName = document.getElementById('playerName').value.trim() || 'Estudiante';
+                
+                // Add student to class
+                classData.students = classData.students || [];
+                classData.students.push({ name: gameState.playerName, status: 'waiting', score: 0, joined: Date.now() });
+                localStorage.setItem(`classroom_${pin}`, JSON.stringify(classData));
+                
+                closeClassroomModal();
+                document.getElementById('teacherNameDisplay').textContent = classData.teacher;
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('waitingRoom').classList.add('active');
+                
+                // Start polling for game start
+                startStudentPolling();
+                updateMascot('wave', `¡Conectado a la clase de ${classData.teacher}!`);
+            } else {
+                document.getElementById('classroomError').style.display = 'block';
+            }
+        }
+        
+        function startStudentPolling() {
+            gameState.studentPollInterval = setInterval(() => {
+                const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
+                if (classData.started) {
+                    clearInterval(gameState.studentPollInterval);
+                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                    document.getElementById('mapScreen').classList.add('active');
+                    generateCountryButtons();
+                    updateMascot('happy', '¡El juego ha comenzado!');
+                }
+            }, 1000);
+        }
+        
+        function updateStudentScore() {
+            if (!gameState.isStudent || !gameState.classroomPin) return;
+            const classData = JSON.parse(localStorage.getItem(`classroom_${gameState.classroomPin}`) || '{}');
+            if (classData.students) {
+                const student = classData.students.find(s => s.name === gameState.playerName);
+                if (student) {
+                    student.score = gameState.totalScore;
+                    student.status = 'finished';
+                    localStorage.setItem(`classroom_${gameState.classroomPin}`, JSON.stringify(classData));
+                }
+            }
+        }
+        
+        function closeClassroomModal() { document.getElementById('classroomModal').classList.remove('active'); }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
