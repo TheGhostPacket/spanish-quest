@@ -9,7 +9,7 @@ An interactive educational game for learning Spanish by exploring Spanish-speaki
 
 🎮 **[Play Now](https://yourusername.github.io/spanish-quest/)** ← *Update with your GitHub Pages URL*
 
-![Game Screenshot](screenshot.png)
+
 
 ---
 
@@ -231,9 +231,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**ShieldStack Technologies**
+**The GhostPacket Team**
 - Portfolio: [theghostpacket.com](https://theghostpacket.com)
-- GitHub: [@yourusername](https://github.com/yourusername)
+- GitHub: [@TheGhostPacket](https://github.com/TheGhostPacket)
 
 ---
 
@@ -241,7 +241,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Inspired by [Kahoot](https://kahoot.com/) and [Wordwall](https://wordwall.net/)
 - Built for Spanish language students at [Proyecto Español](https://www.proyectoespanol.org/), Alicante
-- Special thanks to all Spanish teachers who make learning fun!
+- Special thanks to all Spanish teachers, including Don Paco, who made learning fun!
 
 ---
 
