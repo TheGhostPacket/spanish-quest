@@ -94,7 +94,7 @@ Each country shows interesting facts when you start a quest:
 ## 🚀 Getting Started
 
 ### Play Online
-Simply visit: **[https://yourusername.github.io/spanish-quest/](https://theghostpacket.com/spanish-quest/)**
+Simply visit: **[https://theghostpacket.com/spanish-quest/](https://theghostpacket.com/spanish-quest/)**
 
 ### Run Locally
 1. Clone this repository:
