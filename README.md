@@ -7,8 +7,9 @@
 
 An interactive educational game for learning Spanish by exploring Spanish-speaking countries. Perfect for A1-B1 level students!
 
-🎮 **[Play Now](https://theghostpacket.com/spanish-quest/)** ← *Update with your GitHub Pages URL*
+🎮 **[Play Now](https://yourusername.github.io/spanish-quest/)** ← *Update with your GitHub Pages URL*
 
+![Game Screenshot](screenshot.png)
 
 ---
 
@@ -94,7 +95,7 @@ Each country shows interesting facts when you start a quest:
 ## 🚀 Getting Started
 
 ### Play Online
-Simply visit: **[https://theghostpacket.com/spanish-quest/](https://theghostpacket.com/spanish-quest/)**
+Simply visit: **[https://yourusername.github.io/spanish-quest/](https://yourusername.github.io/spanish-quest/)**
 
 ### Run Locally
 1. Clone this repository:
@@ -129,6 +130,17 @@ Simply visit: **[https://theghostpacket.com/spanish-quest/](https://theghostpack
 
 ---
 
+## 📱 Screenshots
+
+| Welcome Screen | World Map | Quiz Mode |
+|:---:|:---:|:---:|
+| ![Welcome](screenshots/welcome.png) | ![Map](screenshots/map.png) | ![Quiz](screenshots/quiz.png) |
+
+| Results | Leaderboard | Achievements |
+|:---:|:---:|:---:|
+| ![Results](screenshots/results.png) | ![Leaderboard](screenshots/leaderboard.png) | ![Achievements](screenshots/achievements.png) |
+
+---
 
 ## 🛠️ Technical Details
 
@@ -151,6 +163,7 @@ spanish-quest/
 ├── index.html      # Main game file (all-in-one)
 ├── README.md       # This file
 ├── LICENSE         # MIT License
+└── screenshots/    # Game screenshots
 ```
 
 ---
@@ -198,13 +211,13 @@ Contributions are welcome! Here's how you can help:
 
 ### Adding Questions
 Questions follow this format:
-```JavaScript
+```javascript
 {
     question: "Your question here",
     answers: ["Correct", "Wrong1", "Wrong2", "Wrong3"],
     correct: 0,  // Index of correct answer
     category: "gramatica",  // or "vocabulario" or "cultura"
-    Explanation: "Explanation in Spanish"
+    explanation: "Explanation in Spanish"
 }
 ```
 
@@ -218,9 +231,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**The GhostPacket**
-- Portfolio: [theghostpacket.com.com](https://theghostpacket.com)
-- GitHub: [@yourusername](https://github.com/theghostpacket)
+**ShieldStack Technologies**
+- Portfolio: [theghostpacket.com](https://theghostpacket.com)
+- GitHub: [@yourusername](https://github.com/yourusername)
 
 ---
 
@@ -228,7 +241,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Inspired by [Kahoot](https://kahoot.com/) and [Wordwall](https://wordwall.net/)
 - Built for Spanish language students at [Proyecto Español](https://www.proyectoespanol.org/), Alicante
-- Special thanks to all Spanish teachers, including Don Paco, who make learning fun!
+- Special thanks to all Spanish teachers who make learning fun!
 
 ---
 
