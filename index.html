@@ -96,6 +96,89 @@
             border-radius: 50%; cursor: pointer; font-size: 1.2rem; transition: 0.3s;
         }
         .toggle-btn:hover { background: rgba(255,255,255,0.2); }
+        .toggle-btn.playing { animation: pulse-glow 1s infinite; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 5px var(--accent); } 50% { box-shadow: 0 0 20px var(--accent); } }
+        .volume-control { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 20px; }
+        .volume-slider { width: 60px; height: 5px; -webkit-appearance: none; background: rgba(255,255,255,0.2); border-radius: 3px; cursor: pointer; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; }
+        .avatar-section { margin-bottom: 20px; }
+        .avatar-section h3 { color: var(--light); margin-bottom: 10px; font-size: 0.95rem; }
+        .avatar-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .avatar-option { font-size: 2.2rem; padding: 10px; background: rgba(255,255,255,0.05); border: 3px solid transparent; border-radius: 15px; cursor: pointer; transition: 0.3s; }
+        .avatar-option:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); }
+        .avatar-option.selected { border-color: var(--accent); background: rgba(247,201,72,0.2); }
+        .player-avatar-display { font-size: 1.8rem; animation: avatar-bounce 2s infinite; }
+        @keyframes avatar-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        .xp-display { background: linear-gradient(135deg, rgba(155,89,182,0.2), rgba(0,217,255,0.2)); border: 2px solid var(--purple); border-radius: 15px; padding: 15px 20px; margin-bottom: 20px; text-align: center; max-width: 320px; margin-left: auto; margin-right: auto; }
+        .xp-title { color: var(--light); font-weight: 600; margin-bottom: 8px; }
+        .xp-rank { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--accent); }
+        .xp-progress { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--purple), #00D9FF); transition: width 0.5s; }
+        .xp-text { color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 5px; }
+        .xp-earned { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: #00D9FF; margin: 15px 0; animation: xp-pulse 1s infinite; }
+        @keyframes xp-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .game-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 25px 0; }
+        .mode-card { background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 22px 15px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .mode-card:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+        .mode-card-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .mode-card-title { color: var(--light); font-weight: 800; font-size: 1.1rem; margin-bottom: 5px; }
+        .mode-card-desc { color: rgba(255,255,255,0.6); font-size: 0.8rem; }
+        .mode-badge { display: inline-block; padding: 3px 10px; background: var(--success); color: white; border-radius: 10px; font-size: 0.7rem; font-weight: 700; margin-top: 8px; }
+        .story-container { max-width: 750px; margin: 0 auto; background: linear-gradient(180deg, rgba(155,89,182,0.15) 0%, rgba(26,26,46,0.9) 100%); border-radius: 25px; border: 3px solid var(--purple); padding: 30px; }
+        .story-chapter { color: var(--purple); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px; text-align: center; }
+        .story-title { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--light); text-align: center; margin-bottom: 25px; }
+        .story-scene { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 25px; margin-bottom: 20px; }
+        .story-character { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
+        .story-char-avatar { font-size: 3rem; }
+        .story-bubble { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; color: var(--light); line-height: 1.6; position: relative; }
+        .story-bubble::before { content: ''; position: absolute; left: -10px; top: 15px; border: 10px solid transparent; border-right-color: rgba(255,255,255,0.1); }
+        .story-char-name { font-weight: 700; color: var(--accent); margin-bottom: 5px; }
+        .story-narrative { color: rgba(255,255,255,0.75); font-style: italic; text-align: center; margin: 20px 0; line-height: 1.7; }
+        .story-progress { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
+        .story-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+        .story-dot.active { background: var(--purple); }
+        .story-dot.done { background: var(--success); }
+        .battle-container { max-width: 850px; margin: 0 auto; background: linear-gradient(180deg, rgba(231,76,60,0.15) 0%, rgba(26,26,46,0.9) 100%); border-radius: 25px; border: 3px solid var(--danger); padding: 30px; }
+        .battle-vs { font-family: 'Fredoka One', cursive; font-size: 3rem; color: var(--danger); text-align: center; margin: 15px 0; }
+        .battle-players { display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .battle-player { text-align: center; }
+        .battle-player-avatar { font-size: 4rem; margin-bottom: 10px; }
+        .battle-player-name { color: var(--light); font-weight: 700; font-size: 1.2rem; }
+        .battle-player-score { font-family: 'Fredoka One', cursive; font-size: 2.5rem; color: var(--accent); }
+        .battle-player.winner .battle-player-avatar { animation: winner-glow 1s infinite; }
+        @keyframes winner-glow { 0%, 100% { filter: drop-shadow(0 0 10px var(--accent)); } 50% { filter: drop-shadow(0 0 30px var(--accent)); } }
+        .battle-timer { font-family: 'Fredoka One', cursive; font-size: 4rem; color: var(--light); text-align: center; margin: 20px 0; }
+        .battle-timer.urgent { color: var(--danger); animation: pulse 0.5s infinite; }
+        .team-selection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+        .team-card { padding: 25px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; border: 3px solid transparent; }
+        .team-card:hover { transform: translateY(-5px); }
+        .team-card.selected { border-color: white; }
+        .team-card.red { background: linear-gradient(135deg, #E74C3C, #C0392B); }
+        .team-card.blue { background: linear-gradient(135deg, #3498DB, #2980B9); }
+        .team-card.green { background: linear-gradient(135deg, #2ECC71, #27AE60); }
+        .team-card.yellow { background: linear-gradient(135deg, #F7C948, #F39C12); }
+        .team-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .team-name { color: white; font-weight: 800; font-size: 1.1rem; }
+        .team-scores { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; margin: 20px 0; }
+        .team-score { text-align: center; }
+        .team-score-label { font-weight: 700; margin-bottom: 5px; }
+        .team-score-value { font-family: 'Fredoka One', cursive; font-size: 2rem; }
+        .custom-q-form { background: rgba(0,0,0,0.2); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; color: var(--light); font-weight: 600; margin-bottom: 6px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 2px solid rgba(255,255,255,0.2); border-radius: 10px; background: rgba(255,255,255,0.05); color: var(--light); font-family: 'Nunito', sans-serif; font-size: 1rem; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); }
+        .form-select option { background: var(--dark); }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .answers-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .answer-input-wrap { position: relative; }
+        .answer-input-wrap input { width: 100%; padding-right: 40px; }
+        .correct-mark { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+        .correct-mark:hover { border-color: var(--success); }
+        .correct-mark.selected { background: var(--success); border-color: var(--success); }
+        .saved-q-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .saved-q-text { color: var(--light); font-weight: 600; flex: 1; }
+        .saved-q-del { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
         .mascot {
             position: fixed; bottom: 20px; left: 20px; z-index: 50;
             font-size: 3.5rem; cursor: pointer; transition: 0.3s;
@@ -588,6 +671,11 @@
                 <div class="stat" onclick="showAchievements()"><span>🏅</span><span>Logros</span></div>
             </div>
             <button class="toggle-btn" id="soundToggle" onclick="toggleSound()">🔊</button>
+            <button class="toggle-btn" id="musicToggle" onclick="toggleMusic()">🎵</button>
+            <div class="volume-control">
+                <span style="font-size:0.8rem;">🔊</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" onchange="setVolume(this.value)">
+            </div>
             <button class="toggle-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
         </div>
     </header>
@@ -597,16 +685,39 @@
         <div class="screen active" id="welcomeScreen">
             <div class="welcome-container">
                 <div class="welcome-icon">🎮</div>
-                <h1 class="welcome-title">¡Bienvenido a Spanish Quest!</h1>
-                <p class="welcome-desc">Embárcate en una aventura por el mundo hispanohablante. Visita países, responde preguntas y mejora tu español.</p>
+                <h1 class="welcome-title">¡Spanish Quest Ultimate!</h1>
+                <p class="welcome-desc">Aprende español explorando países, batallando con amigos y viviendo historias épicas.</p>
+                
+                <!-- XP Display -->
+                <div class="xp-display" id="xpDisplay">
+                    <div class="xp-title">Tu Nivel</div>
+                    <div class="xp-rank" id="xpRank">🌱 Novato</div>
+                    <div class="xp-text" id="xpText">0 / 100 XP</div>
+                    <div class="xp-progress"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+                </div>
                 
                 <div class="player-input-section">
                     <label for="playerName">Tu nombre:</label>
                     <input type="text" id="playerName" class="player-input" placeholder="Escribe tu nombre..." maxlength="20">
                 </div>
                 
+                <!-- Avatar Selection -->
+                <div class="avatar-section">
+                    <h3>Elige tu avatar:</h3>
+                    <div class="avatar-grid" id="avatarGrid">
+                        <div class="avatar-option selected" data-avatar="🦊" onclick="selectAvatar('🦊')">🦊</div>
+                        <div class="avatar-option" data-avatar="🐼" onclick="selectAvatar('🐼')">🐼</div>
+                        <div class="avatar-option" data-avatar="🦁" onclick="selectAvatar('🦁')">🦁</div>
+                        <div class="avatar-option" data-avatar="🐸" onclick="selectAvatar('🐸')">🐸</div>
+                        <div class="avatar-option" data-avatar="🦋" onclick="selectAvatar('🦋')">🦋</div>
+                        <div class="avatar-option" data-avatar="🐢" onclick="selectAvatar('🐢')">🐢</div>
+                        <div class="avatar-option" data-avatar="🦄" onclick="selectAvatar('🦄')">🦄</div>
+                        <div class="avatar-option" data-avatar="🐙" onclick="selectAvatar('🐙')">🐙</div>
+                    </div>
+                </div>
+                
                 <div class="difficulty-section">
-                    <h3>Selecciona tu nivel:</h3>
+                    <h3>Nivel de español:</h3>
                     <div class="difficulty-buttons">
                         <button class="difficulty-btn" data-level="A1" onclick="selectDifficulty('A1')">Principiante<span class="level-badge">A1</span></button>
                         <button class="difficulty-btn selected" data-level="A2" onclick="selectDifficulty('A2')">Elemental<span class="level-badge">A2</span></button>
@@ -614,23 +725,159 @@
                     </div>
                 </div>
                 
-                <div class="feature-grid">
-                    <div class="feature-item"><span>🌍</span><span>10 países</span></div>
-                    <div class="feature-item"><span>📚</span><span>100+ preguntas</span></div>
-                    <div class="feature-item"><span>⏱️</span><span>Desafío con tiempo</span></div>
-                    <div class="feature-item"><span>🏅</span><span>Logros</span></div>
-                    <div class="feature-item"><span>💡</span><span>Explicaciones</span></div>
-                    <div class="feature-item"><span>👩‍🏫</span><span>Modo clase</span></div>
-                </div>
-                
-                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">
-                    <button class="btn btn-primary" onclick="startGame()">🚀 ¡Jugar Solo!</button>
-                    <button class="btn btn-secondary" onclick="showFlashcards()">📖 Estudiar</button>
+                <!-- Game Modes -->
+                <div class="game-modes">
+                    <div class="mode-card" onclick="startGame()">
+                        <div class="mode-card-icon">🗺️</div>
+                        <div class="mode-card-title">Aventura</div>
+                        <div class="mode-card-desc">Explora países</div>
+                    </div>
+                    <div class="mode-card" onclick="startStoryMode()">
+                        <div class="mode-card-icon">📖</div>
+                        <div class="mode-card-title">Historia</div>
+                        <div class="mode-card-desc">Modo narrativo</div>
+                        <span class="mode-badge">NUEVO</span>
+                    </div>
+                    <div class="mode-card" onclick="showBattleSetup()">
+                        <div class="mode-card-icon">⚔️</div>
+                        <div class="mode-card-title">Batalla 1v1</div>
+                        <div class="mode-card-desc">Reta amigos</div>
+                        <span class="mode-badge">NUEVO</span>
+                    </div>
+                    <div class="mode-card" onclick="showFlashcards()">
+                        <div class="mode-card-icon">📚</div>
+                        <div class="mode-card-title">Estudiar</div>
+                        <div class="mode-card-desc">Flashcards</div>
+                    </div>
                 </div>
                 
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
                     <button class="btn btn-small btn-teacher" onclick="showTeacherSetup()">👩‍🏫 Modo Profesor</button>
                     <button class="btn btn-small btn-purple" onclick="showJoinClass()">🎓 Unirse a Clase</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Story Mode Screen -->
+        <div class="screen" id="storyScreen">
+            <div class="story-container">
+                <div class="story-chapter" id="storyChapter">Capítulo 1</div>
+                <h1 class="story-title" id="storyTitle">El Viaje Comienza</h1>
+                <div class="story-scene" id="storyScene">
+                    <div class="story-character">
+                        <div class="story-char-avatar" id="storyCharAvatar">👨‍🏫</div>
+                        <div class="story-bubble">
+                            <div class="story-char-name" id="storyCharName">Profesor García</div>
+                            <div id="storyDialogue">¡Bienvenido, aventurero!</div>
+                        </div>
+                    </div>
+                    <div class="story-narrative" id="storyNarrative">El sol brilla mientras comienzas tu aventura...</div>
+                </div>
+                <div class="story-progress" id="storyProgress"></div>
+                <div id="storyQuizBox" style="display:none;">
+                    <div class="question-text" id="storyQuestion"></div>
+                    <div class="answers-grid" id="storyAnswers"></div>
+                </div>
+                <div style="text-align:center;margin-top:20px;">
+                    <button class="btn btn-primary" id="storyContinue" onclick="continueStory()">Continuar →</button>
+                    <button class="btn btn-secondary btn-small" onclick="goHome()" style="margin-left:10px;">← Salir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Setup Screen -->
+        <div class="screen" id="battleSetupScreen">
+            <div class="battle-container">
+                <h1 class="welcome-title">⚔️ Batalla 1v1</h1>
+                <p class="welcome-desc">¡Reta a un amigo y compitan en tiempo real!</p>
+                
+                <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:30px 0;">
+                    <button class="btn btn-primary" onclick="createBattle()">🎯 Crear Batalla</button>
+                    <button class="btn btn-secondary" onclick="showJoinBattle()">🤝 Unirse</button>
+                </div>
+                
+                <div id="battleCodeBox" style="display:none;text-align:center;margin:20px 0;">
+                    <p style="color:var(--light);margin-bottom:10px;">Comparte este código:</p>
+                    <div class="pin-display" style="display:inline-block;">
+                        <div class="pin-code" id="battleCode">----</div>
+                    </div>
+                </div>
+                
+                <div id="joinBattleBox" style="display:none;text-align:center;margin:20px 0;">
+                    <p style="color:var(--light);margin-bottom:15px;">Código de batalla:</p>
+                    <input type="text" class="join-input" id="battleCodeInput" maxlength="4" placeholder="----">
+                    <p class="join-error" id="battleError">Batalla no encontrada</p>
+                    <div style="margin-top:15px;">
+                        <button class="btn btn-primary" onclick="joinBattle()">¡Unirse!</button>
+                    </div>
+                </div>
+                
+                <div class="students-section" id="battlePlayersBox" style="display:none;">
+                    <div class="students-header">
+                        <span class="students-title">⚔️ Jugadores</span>
+                        <span class="students-count" id="battlePlayerCount">0/2</span>
+                    </div>
+                    <div class="students-grid" id="battlePlayersGrid"></div>
+                </div>
+                
+                <div style="text-align:center;margin-top:20px;">
+                    <button class="btn btn-success" id="startBattleBtn" onclick="startBattleGame()" style="display:none;">⚔️ ¡Comenzar!</button>
+                    <button class="btn btn-secondary btn-small" onclick="goHome()">← Volver</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Game Screen -->
+        <div class="screen" id="battleGameScreen">
+            <div class="battle-container">
+                <div class="battle-players">
+                    <div class="battle-player" id="battleP1">
+                        <div class="battle-player-avatar" id="battleAvatar1">🦊</div>
+                        <div class="battle-player-name" id="battleName1">Jugador 1</div>
+                        <div class="battle-player-score" id="battleScore1">0</div>
+                    </div>
+                    <div class="battle-vs">VS</div>
+                    <div class="battle-player" id="battleP2">
+                        <div class="battle-player-avatar" id="battleAvatar2">🐼</div>
+                        <div class="battle-player-name" id="battleName2">Jugador 2</div>
+                        <div class="battle-player-score" id="battleScore2">0</div>
+                    </div>
+                </div>
+                <div class="battle-timer" id="battleTimer">20</div>
+                <div style="background:rgba(0,0,0,0.3);border-radius:15px;padding:25px;margin:20px 0;">
+                    <div class="question-counter" id="battleQCounter">Pregunta 1 de 5</div>
+                    <div class="question-text" id="battleQText">Cargando...</div>
+                    <div class="answers-grid" id="battleAnswersGrid"></div>
+                </div>
+                <div class="explanation-box" id="battleExplain">
+                    <div class="explanation-title">💡 Explicación</div>
+                    <div class="explanation-text" id="battleExplainText"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Results Screen -->
+        <div class="screen" id="battleResultsScreen">
+            <div class="battle-container" style="text-align:center;">
+                <div style="font-size:5rem;margin-bottom:15px;" id="battleResultIcon">🏆</div>
+                <h1 class="welcome-title" id="battleResultTitle">¡Victoria!</h1>
+                <div class="battle-players" style="margin:30px 0;">
+                    <div class="battle-player">
+                        <div class="battle-player-avatar" id="finalAvatar1">🦊</div>
+                        <div class="battle-player-name" id="finalName1">Jugador 1</div>
+                        <div class="battle-player-score" id="finalScore1">0</div>
+                    </div>
+                    <div class="battle-vs">VS</div>
+                    <div class="battle-player">
+                        <div class="battle-player-avatar" id="finalAvatar2">🐼</div>
+                        <div class="battle-player-name" id="finalName2">Jugador 2</div>
+                        <div class="battle-player-score" id="finalScore2">0</div>
+                    </div>
+                </div>
+                <div class="xp-earned" id="battleXP">+50 XP</div>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="showBattleSetup()">🔄 Nueva</button>
+                    <button class="btn btn-secondary" onclick="goHome()">← Menú</button>
                 </div>
             </div>
         </div>
@@ -959,7 +1206,7 @@
         // =====================================================
         // 🔥 FIREBASE CONFIGURATION - REPLACE WITH YOUR CONFIG
         // =====================================================
-                const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyCyjx25i8U6tP0jxGBpyzmKI1cAKjnsiNc",
             authDomain: "spanish-quest-fa18f.firebaseapp.com",
             databaseURL: "https://spanish-quest-fa18f-default-rtdb.firebaseio.com",
@@ -1086,18 +1333,45 @@
         ];
 
         // ==================== GAME STATE ====================
+        const levels = [
+            { name: '🌱 Novato', xp: 0 }, { name: '📚 Aprendiz', xp: 100 }, { name: '✏️ Estudiante', xp: 250 },
+            { name: '📖 Lector', xp: 500 }, { name: '🎯 Practicante', xp: 800 }, { name: '⭐ Competente', xp: 1200 },
+            { name: '💫 Avanzado', xp: 1700 }, { name: '🔥 Experto', xp: 2300 }, { name: '👑 Maestro', xp: 3000 },
+            { name: '🏆 Leyenda', xp: 4000 }
+        ];
+        
+        const storyChapters = [
+            { title: "El Viaje Comienza", scenes: [
+                { char: "👨‍🏫", name: "Profesor García", text: "¡Bienvenido! Soy el Profesor García. Tu misión es viajar por el mundo hispanohablante.", narrative: "El sol brilla sobre la academia..." },
+                { char: "🦜", name: "Paco", text: "¡Hola! Soy Paco, tu guía. ¡Vamos a aprender español juntos!", narrative: "Un colorido loro aparece volando..." },
+                { quiz: true, q: { question: "¿Cómo se dice 'hello'?", answers: ["Hola", "Adiós", "Gracias", "Por favor"], correct: 0, explanation: "'Hola' es el saludo básico." } },
+                { char: "👨‍🏫", name: "Profesor García", text: "¡Excelente! Ahora estás listo para tu primera aventura.", narrative: "El profesor te entrega un mapa..." }
+            ]},
+            { title: "Aventura en España", scenes: [
+                { char: "💃", name: "María", text: "¡Hola! Bienvenido a España. ¿Te gusta el flamenco?", narrative: "Llegas a Sevilla, ciudad del flamenco..." },
+                { quiz: true, q: { question: "La capital de España es:", answers: ["Madrid", "Barcelona", "Sevilla", "Valencia"], correct: 0, explanation: "Madrid es la capital de España." } },
+                { char: "🍳", name: "Chef Antonio", text: "¿Quieres probar una paella?", narrative: "El aroma de paella llena el aire..." },
+                { quiz: true, q: { question: "'La paella está muy ___'", answers: ["rica", "rico", "ricas", "ricos"], correct: 0, explanation: "'Rica' concuerda con 'paella' (femenino)." } }
+            ]}
+        ];
+
         let gameState = {
-            playerName: '', difficulty: 'A2', totalScore: 0, totalStars: 0,
-            completedCountries: {}, selectedCategory: 'all', soundEnabled: true, theme: 'dark',
+            playerName: '', avatar: '🦊', difficulty: 'A2', totalScore: 0, totalStars: 0, xp: 0, level: 1,
+            completedCountries: {}, selectedCategory: 'all', soundEnabled: true, musicEnabled: false, theme: 'dark',
             achievements: JSON.parse(JSON.stringify(achievements)),
             categoryStats: { gramatica: 0, vocabulario: 0, cultura: 0 },
+            customQuestions: [],
             // Quiz state
             currentCountry: null, currentQuestions: [], currentQuestionIndex: 0,
             correctAnswers: 0, wrongAnswers: [], currentQuizScore: 0, hintsRemaining: 2,
             timer: 30, timerInterval: null, answerStartTime: null,
             // Classroom state
             isTeacher: false, isStudent: false, classroomId: null, studentId: null,
-            classQuestions: [], classQuestionIndex: 0, liveTimer: null
+            classQuestions: [], classQuestionIndex: 0, liveTimer: null,
+            // Story state
+            storyChapter: 0, storyScene: 0,
+            // Battle state
+            battleId: null, isBattleHost: false, battleQuestions: [], battleQuestionIndex: 0, battleScore: 0
         };
 
         // ==================== INITIALIZATION ====================
@@ -1106,15 +1380,22 @@
             loadGameState();
             createStars();
             updateStats();
+            updateXPDisplay();
             generateCountryButtons();
             
             document.body.dataset.theme = gameState.theme;
             document.getElementById('themeToggle').textContent = gameState.theme === 'dark' ? '🌙' : '☀️';
             document.getElementById('soundToggle').textContent = gameState.soundEnabled ? '🔊' : '🔇';
             if (gameState.playerName) document.getElementById('playerName').value = gameState.playerName;
+            selectAvatar(gameState.avatar);
             
             document.querySelectorAll('.difficulty-btn').forEach(b => 
                 b.classList.toggle('selected', b.dataset.level === gameState.difficulty));
+            
+            // Check URL for join codes
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('join')) { document.getElementById('classCodeInput').value = params.get('join'); showJoinClass(); }
+            if (params.get('battle')) { document.getElementById('battleCodeInput').value = params.get('battle'); showBattleSetup(); showJoinBattle(); }
         }
 
         function createStars() {
@@ -1128,10 +1409,11 @@
 
         function saveGameState() {
             localStorage.setItem('spanishQuestSave', JSON.stringify({
-                playerName: gameState.playerName, difficulty: gameState.difficulty,
-                totalScore: gameState.totalScore, totalStars: gameState.totalStars,
-                completedCountries: gameState.completedCountries, soundEnabled: gameState.soundEnabled,
-                theme: gameState.theme, achievements: gameState.achievements, categoryStats: gameState.categoryStats
+                playerName: gameState.playerName, avatar: gameState.avatar, difficulty: gameState.difficulty,
+                totalScore: gameState.totalScore, totalStars: gameState.totalStars, xp: gameState.xp, level: gameState.level,
+                completedCountries: gameState.completedCountries, soundEnabled: gameState.soundEnabled, musicEnabled: gameState.musicEnabled,
+                theme: gameState.theme, achievements: gameState.achievements, categoryStats: gameState.categoryStats,
+                customQuestions: gameState.customQuestions, storyChapter: gameState.storyChapter
             }));
         }
 
@@ -1139,22 +1421,79 @@
             const saved = localStorage.getItem('spanishQuestSave');
             if (saved) Object.assign(gameState, JSON.parse(saved));
         }
+        
+        // ==================== AVATAR ====================
+        function selectAvatar(avatar) {
+            playSound('click');
+            gameState.avatar = avatar;
+            document.querySelectorAll('#avatarGrid .avatar-option').forEach(o => o.classList.toggle('selected', o.dataset.avatar === avatar));
+            saveGameState();
+        }
+        
+        // ==================== XP & LEVELS ====================
+        function addXP(amount) {
+            const oldLevel = gameState.level;
+            gameState.xp += amount;
+            for (let i = levels.length - 1; i >= 0; i--) {
+                if (gameState.xp >= levels[i].xp) { gameState.level = i + 1; break; }
+            }
+            updateXPDisplay();
+            saveGameState();
+            if (gameState.level > oldLevel) {
+                playSound('correct'); playSound('correct');
+                alert('¡Subiste a nivel ' + gameState.level + ': ' + levels[gameState.level - 1].name + '!');
+            }
+        }
+        
+        function updateXPDisplay() {
+            const curr = levels[gameState.level - 1] || levels[0];
+            const next = levels[gameState.level] || levels[levels.length - 1];
+            const progress = ((gameState.xp - curr.xp) / (next.xp - curr.xp)) * 100;
+            document.getElementById('xpRank').textContent = curr.name;
+            document.getElementById('xpText').textContent = `${gameState.xp} / ${next.xp} XP`;
+            document.getElementById('xpFill').style.width = Math.min(progress, 100) + '%';
+        }
 
         // ==================== AUDIO ====================
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
+        let audioCtx = null, masterVolume = 0.5, musicInterval = null;
+        
+        function setVolume(v) { masterVolume = v / 100; }
+        
         function playSound(type) {
             if (!gameState.soundEnabled) return;
             if (!audioCtx) audioCtx = new AudioContext();
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
+            const vol = 0.3 * masterVolume;
             const sounds = {
-                correct: () => { osc.frequency.setValueAtTime(523, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime+0.1); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.3); osc.start(); osc.stop(audioCtx.currentTime+0.3); },
-                wrong: () => { osc.frequency.setValueAtTime(200, audioCtx.currentTime); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.2); osc.start(); osc.stop(audioCtx.currentTime+0.2); },
-                tick: () => { osc.frequency.setValueAtTime(800, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.05); osc.start(); osc.stop(audioCtx.currentTime+0.05); },
-                click: () => { osc.frequency.setValueAtTime(600, audioCtx.currentTime); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.08); osc.start(); osc.stop(audioCtx.currentTime+0.08); }
+                correct: () => { osc.frequency.setValueAtTime(523, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime+0.1); gain.gain.setValueAtTime(vol, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.3); osc.start(); osc.stop(audioCtx.currentTime+0.3); },
+                wrong: () => { osc.frequency.setValueAtTime(200, audioCtx.currentTime); gain.gain.setValueAtTime(vol, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.2); osc.start(); osc.stop(audioCtx.currentTime+0.2); },
+                tick: () => { osc.frequency.setValueAtTime(800, audioCtx.currentTime); gain.gain.setValueAtTime(0.1*masterVolume, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.05); osc.start(); osc.stop(audioCtx.currentTime+0.05); },
+                click: () => { osc.frequency.setValueAtTime(600, audioCtx.currentTime); gain.gain.setValueAtTime(0.15*masterVolume, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.08); osc.start(); osc.stop(audioCtx.currentTime+0.08); },
+                victory: () => { [392, 523, 659, 784].forEach((f, i) => { const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value = f; g.gain.setValueAtTime(0.2*masterVolume, audioCtx.currentTime + i*0.12); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i*0.12 + 0.4); o.start(audioCtx.currentTime + i*0.12); o.stop(audioCtx.currentTime + i*0.12 + 0.4); }); }
             };
             if (sounds[type]) sounds[type]();
+        }
+        
+        function toggleMusic() {
+            gameState.musicEnabled = !gameState.musicEnabled;
+            document.getElementById('musicToggle').classList.toggle('playing', gameState.musicEnabled);
+            if (gameState.musicEnabled) {
+                if (!audioCtx) audioCtx = new AudioContext();
+                const melody = [330, 392, 440, 392, 330, 294, 330, 392];
+                let i = 0;
+                musicInterval = setInterval(() => {
+                    if (!gameState.musicEnabled) return;
+                    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.frequency.value = melody[i++ % melody.length];
+                    gain.gain.setValueAtTime(0.08 * masterVolume, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                }, 400);
+            } else if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+            saveGameState();
         }
 
         // ==================== NAVIGATION ====================
@@ -1988,6 +2327,276 @@
             gameState.classroomId = null;
             gameState.studentId = null;
             goHome();
+        }
+
+        // ==================== STORY MODE ====================
+        function startStoryMode() {
+            playSound('click');
+            showScreen('storyScreen');
+            loadStoryScene();
+        }
+
+        function loadStoryScene() {
+            const chapter = storyChapters[gameState.storyChapter];
+            if (!chapter) { gameState.storyChapter = 0; loadStoryScene(); return; }
+            document.getElementById('storyChapter').textContent = `Capítulo ${gameState.storyChapter + 1}`;
+            document.getElementById('storyTitle').textContent = chapter.title;
+            
+            const scene = chapter.scenes[gameState.storyScene];
+            const quizBox = document.getElementById('storyQuizBox');
+            const sceneDiv = document.getElementById('storyScene');
+            
+            if (scene.quiz) {
+                sceneDiv.style.display = 'none';
+                quizBox.style.display = 'block';
+                document.getElementById('storyQuestion').textContent = scene.q.question;
+                const ans = document.getElementById('storyAnswers'); ans.innerHTML = '';
+                scene.q.answers.forEach((a, i) => {
+                    const b = document.createElement('button'); b.className = 'answer-btn'; b.textContent = a;
+                    b.onclick = () => selectStoryAnswer(i, scene.q);
+                    ans.appendChild(b);
+                });
+                document.getElementById('storyContinue').style.display = 'none';
+            } else {
+                quizBox.style.display = 'none';
+                sceneDiv.style.display = 'block';
+                document.getElementById('storyCharAvatar').textContent = scene.char;
+                document.getElementById('storyCharName').textContent = scene.name;
+                document.getElementById('storyDialogue').textContent = scene.text;
+                document.getElementById('storyNarrative').textContent = scene.narrative;
+                document.getElementById('storyContinue').style.display = 'inline-flex';
+            }
+            
+            const prog = document.getElementById('storyProgress'); prog.innerHTML = '';
+            chapter.scenes.forEach((_, i) => {
+                const d = document.createElement('div');
+                d.className = 'story-dot' + (i < gameState.storyScene ? ' done' : i === gameState.storyScene ? ' active' : '');
+                prog.appendChild(d);
+            });
+        }
+
+        function selectStoryAnswer(idx, q) {
+            const btns = document.querySelectorAll('#storyAnswers .answer-btn');
+            btns.forEach((b, i) => { b.disabled = true; if (i === q.correct) b.classList.add('correct'); });
+            if (idx === q.correct) { playSound('correct'); addXP(15); } else { btns[idx].classList.add('incorrect'); playSound('wrong'); }
+            document.getElementById('storyContinue').style.display = 'inline-flex';
+        }
+
+        function continueStory() {
+            playSound('click');
+            const chapter = storyChapters[gameState.storyChapter];
+            gameState.storyScene++;
+            if (gameState.storyScene >= chapter.scenes.length) {
+                gameState.storyChapter++;
+                gameState.storyScene = 0;
+                addXP(50);
+                if (gameState.storyChapter >= storyChapters.length) {
+                    alert('¡Has completado la historia! Más capítulos pronto...');
+                    goHome();
+                    return;
+                }
+            }
+            saveGameState();
+            loadStoryScene();
+        }
+
+        // ==================== BATTLE MODE ====================
+        function showBattleSetup() {
+            playSound('click');
+            showScreen('battleSetupScreen');
+            document.getElementById('battleCodeBox').style.display = 'none';
+            document.getElementById('joinBattleBox').style.display = 'none';
+            document.getElementById('battlePlayersBox').style.display = 'none';
+            document.getElementById('startBattleBtn').style.display = 'none';
+        }
+        
+        function showJoinBattle() {
+            playSound('click');
+            document.getElementById('joinBattleBox').style.display = 'block';
+            document.getElementById('battleCodeBox').style.display = 'none';
+            document.getElementById('battleError').style.display = 'none';
+        }
+
+        function createBattle() {
+            if (!firebaseInitialized) { alert('Firebase no configurado'); return; }
+            playSound('click');
+            gameState.playerName = document.getElementById('playerName').value.trim() || 'Jugador';
+            const pin = Math.floor(1000 + Math.random() * 9000).toString();
+            gameState.battleId = pin;
+            gameState.isBattleHost = true;
+            gameState.battleQuestions = getRandomQuestions(gameState.difficulty, 'all', 5);
+            
+            db.ref('battles/' + pin).set({
+                host: gameState.playerName, hostAvatar: gameState.avatar,
+                difficulty: gameState.difficulty, questions: gameState.battleQuestions,
+                status: 'waiting', players: { host: { name: gameState.playerName, avatar: gameState.avatar, score: 0 } },
+                currentQuestion: -1, created: Date.now()
+            });
+            
+            document.getElementById('battleCode').textContent = pin;
+            document.getElementById('battleCodeBox').style.display = 'block';
+            document.getElementById('joinBattleBox').style.display = 'none';
+            document.getElementById('battlePlayersBox').style.display = 'block';
+            listenBattlePlayers(pin);
+        }
+
+        function joinBattle() {
+            if (!firebaseInitialized) { alert('Firebase no configurado'); return; }
+            playSound('click');
+            const pin = document.getElementById('battleCodeInput').value.trim();
+            if (pin.length !== 4) { document.getElementById('battleError').style.display = 'block'; return; }
+            
+            db.ref('battles/' + pin).once('value', snap => {
+                if (!snap.exists() || snap.val().status !== 'waiting') {
+                    document.getElementById('battleError').style.display = 'block';
+                    return;
+                }
+                gameState.playerName = document.getElementById('playerName').value.trim() || 'Retador';
+                gameState.battleId = pin;
+                gameState.isBattleHost = false;
+                
+                db.ref('battles/' + pin + '/players/guest').set({ name: gameState.playerName, avatar: gameState.avatar, score: 0 });
+                
+                document.getElementById('joinBattleBox').style.display = 'none';
+                document.getElementById('battlePlayersBox').style.display = 'block';
+                listenBattlePlayers(pin);
+                listenBattleStatus(pin);
+            });
+        }
+
+        function listenBattlePlayers(pin) {
+            db.ref('battles/' + pin + '/players').on('value', snap => {
+                const players = snap.val() || {};
+                const grid = document.getElementById('battlePlayersGrid');
+                grid.innerHTML = Object.values(players).map(p => `<div class="student-card"><span style="font-size:1.5rem;">${p.avatar}</span><span class="student-name">${p.name}</span></div>`).join('');
+                document.getElementById('battlePlayerCount').textContent = `${Object.keys(players).length}/2`;
+                if (gameState.isBattleHost && Object.keys(players).length >= 2) {
+                    document.getElementById('startBattleBtn').style.display = 'inline-flex';
+                }
+            });
+        }
+
+        function listenBattleStatus(pin) {
+            db.ref('battles/' + pin).on('value', snap => {
+                const data = snap.val();
+                if (!data) return;
+                if (data.status === 'playing' && data.currentQuestion >= 0) {
+                    gameState.battleQuestions = data.questions;
+                    gameState.battleQuestionIndex = data.currentQuestion;
+                    showBattleQuestion();
+                }
+                if (data.status === 'finished') showBattleResults();
+            });
+        }
+
+        function startBattleGame() {
+            if (!gameState.isBattleHost) return;
+            playSound('click');
+            db.ref('battles/' + gameState.battleId).update({ status: 'playing', currentQuestion: 0, questionStartTime: Date.now() });
+            gameState.battleQuestionIndex = 0;
+            showBattleQuestion();
+        }
+
+        function showBattleQuestion() {
+            showScreen('battleGameScreen');
+            const q = gameState.battleQuestions[gameState.battleQuestionIndex];
+            document.getElementById('battleQCounter').textContent = `Pregunta ${gameState.battleQuestionIndex + 1} de ${gameState.battleQuestions.length}`;
+            document.getElementById('battleQText').textContent = q.question;
+            document.getElementById('battleExplain').classList.remove('show');
+            
+            const g = document.getElementById('battleAnswersGrid'); g.innerHTML = '';
+            q.answers.forEach((a, i) => {
+                const b = document.createElement('button'); b.className = 'answer-btn'; b.textContent = a;
+                b.onclick = () => submitBattleAnswer(i);
+                g.appendChild(b);
+            });
+            
+            db.ref('battles/' + gameState.battleId + '/players').on('value', snap => {
+                const p = snap.val() || {};
+                if (p.host) { document.getElementById('battleName1').textContent = p.host.name; document.getElementById('battleAvatar1').textContent = p.host.avatar; document.getElementById('battleScore1').textContent = p.host.score; }
+                if (p.guest) { document.getElementById('battleName2').textContent = p.guest.name; document.getElementById('battleAvatar2').textContent = p.guest.avatar; document.getElementById('battleScore2').textContent = p.guest.score; }
+            });
+            
+            let time = 15;
+            document.getElementById('battleTimer').textContent = time;
+            document.getElementById('battleTimer').classList.remove('urgent');
+            if (gameState.liveTimer) clearInterval(gameState.liveTimer);
+            gameState.liveTimer = setInterval(() => {
+                time--;
+                document.getElementById('battleTimer').textContent = time;
+                if (time <= 5) document.getElementById('battleTimer').classList.add('urgent');
+                if (time <= 0) { clearInterval(gameState.liveTimer); submitBattleAnswer(-1); }
+            }, 1000);
+        }
+
+        function submitBattleAnswer(idx) {
+            clearInterval(gameState.liveTimer);
+            const q = gameState.battleQuestions[gameState.battleQuestionIndex];
+            const btns = document.querySelectorAll('#battleAnswersGrid .answer-btn');
+            const playerKey = gameState.isBattleHost ? 'host' : 'guest';
+            
+            btns.forEach((b, i) => { b.disabled = true; if (i === q.correct) b.classList.add('correct'); });
+            
+            if (idx === q.correct) {
+                gameState.battleScore += 100;
+                if (idx >= 0) btns[idx].classList.add('correct');
+                playSound('correct');
+                db.ref('battles/' + gameState.battleId + '/players/' + playerKey + '/score').transaction(s => (s || 0) + 100);
+            } else {
+                if (idx >= 0) btns[idx].classList.add('incorrect');
+                playSound('wrong');
+            }
+            
+            document.getElementById('battleExplainText').textContent = q.explanation;
+            document.getElementById('battleExplain').classList.add('show');
+            
+            setTimeout(() => {
+                if (gameState.isBattleHost) {
+                    gameState.battleQuestionIndex++;
+                    if (gameState.battleQuestionIndex < gameState.battleQuestions.length) {
+                        db.ref('battles/' + gameState.battleId).update({ currentQuestion: gameState.battleQuestionIndex, questionStartTime: Date.now() });
+                    } else {
+                        db.ref('battles/' + gameState.battleId).update({ status: 'finished' });
+                    }
+                }
+            }, 2000);
+        }
+
+        function showBattleResults() {
+            showScreen('battleResultsScreen');
+            db.ref('battles/' + gameState.battleId + '/players').once('value', snap => {
+                const p = snap.val() || {};
+                document.getElementById('finalName1').textContent = p.host?.name || 'Host';
+                document.getElementById('finalAvatar1').textContent = p.host?.avatar || '🦊';
+                document.getElementById('finalScore1').textContent = p.host?.score || 0;
+                document.getElementById('finalName2').textContent = p.guest?.name || 'Guest';
+                document.getElementById('finalAvatar2').textContent = p.guest?.avatar || '🐼';
+                document.getElementById('finalScore2').textContent = p.guest?.score || 0;
+                
+                const myKey = gameState.isBattleHost ? 'host' : 'guest';
+                const oppKey = gameState.isBattleHost ? 'guest' : 'host';
+                const myScore = p[myKey]?.score || 0;
+                const oppScore = p[oppKey]?.score || 0;
+                
+                if (myScore > oppScore) {
+                    document.getElementById('battleResultIcon').textContent = '🏆';
+                    document.getElementById('battleResultTitle').textContent = '¡Victoria!';
+                    document.getElementById('battleXP').textContent = '+75 XP';
+                    addXP(75);
+                    playSound('victory');
+                    createConfetti();
+                } else if (myScore < oppScore) {
+                    document.getElementById('battleResultIcon').textContent = '😢';
+                    document.getElementById('battleResultTitle').textContent = 'Derrota';
+                    document.getElementById('battleXP').textContent = '+25 XP';
+                    addXP(25);
+                } else {
+                    document.getElementById('battleResultIcon').textContent = '🤝';
+                    document.getElementById('battleResultTitle').textContent = '¡Empate!';
+                    document.getElementById('battleXP').textContent = '+50 XP';
+                    addXP(50);
+                }
+            });
         }
 
         // ==================== INIT ====================
